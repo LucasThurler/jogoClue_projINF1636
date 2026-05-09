@@ -3,7 +3,7 @@ package model;
 import java.util.concurrent.ThreadLocalRandom;
 
 class Dado{
-    private int numFaces;
+    private final int numFaces;
     private int valorAtual;
 
     Dado(int numFaces) {
@@ -17,5 +17,12 @@ class Dado{
 
     int getValorAtual() {
         return valorAtual;
+    }
+
+    //APENAS PARA DEBUG
+    public static void main(String[] args) {
+        Dado d = new Dado(6);
+        d.lancar();
+        System.out.println("Valor: " + d.getValorAtual());
     }
 }
