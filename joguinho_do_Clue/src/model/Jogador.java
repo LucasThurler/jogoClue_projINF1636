@@ -26,6 +26,7 @@ class Jogador {
         return mao;
     }
 
+    //Regra 6 - Bloco de notas para anotações
     List<String> getBlocoDeNotas() {
         return blocoDeNotas;
     }
