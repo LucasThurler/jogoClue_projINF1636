@@ -7,11 +7,13 @@ class Jogador {
     private String nome;
     private List<Carta> mao;
     private List<String> blocoDeNotas;
+    private int posicaoAtual;
 
     Jogador(String nome) {
         this.nome = nome;
         this.mao = new ArrayList<>();
         this.blocoDeNotas = new ArrayList<>();
+        this.posicaoAtual = -1;
     }
 
     void receberCarta(Carta carta) {
@@ -33,6 +35,14 @@ class Jogador {
 
     String getNome() {
         return nome;
+    }
+    
+    int getPosicaoAtual() {
+        return posicaoAtual;
+    }
+
+    void setPosicaoAtual(int novaPosicao) {
+        this.posicaoAtual = novaPosicao;
     }
 
     @Override
