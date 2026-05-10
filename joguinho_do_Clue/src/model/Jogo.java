@@ -1,3 +1,8 @@
+// INF1636
+// Lucas Thurler
+// Pedro Augusto
+// Douglas Gomes
+
 package model;
 
 import java.util.ArrayList;
