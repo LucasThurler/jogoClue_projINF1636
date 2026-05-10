@@ -1,0 +1,7 @@
+{
+    "java.project.sourcePaths": ["joguinho_do_Clue/src", "joguinho_do_Clue/test"],
+    "java.project.outputPath": "joguinho_do_Clue/bin",
+    "java.project.referencedLibraries": [
+        "joguinho_do_Clue/lib/**/*.jar"
+    ]
+}
