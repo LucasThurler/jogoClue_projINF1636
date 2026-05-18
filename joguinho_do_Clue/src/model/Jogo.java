@@ -12,6 +12,7 @@ class Jogo {
     private List<Jogador> jogadores;
     private int indiceJogadorAtual;
     private Baralho baralho;
+    private MapeaCasas mapeaCasas;
 
     Jogo(List<Jogador> jogadores) {
         if (jogadores.size() < 3 || jogadores.size() > 6) {
@@ -29,9 +30,26 @@ class Jogo {
         baralho.embaralhar();
         baralho.preencherEnvelope();
         baralho.distribuirCartas(jogadores);
-
         // Regra 7 - Srta. Scarlet sempre começa
         indiceJogadorAtual = encontrarSrtaScarlet();
+        // Conecta o grafo real ao MapeaCasas
+        mapeaCasas = new MapeaCasas(TabuleiroCasas.construirGrafo());
+        
+        // Define posição inicial de cada jogador
+        for (Jogador j : jogadores) {
+            switch (j.getNome()) {
+                case "Coronel Mustard": j.setPosicaoAtual(TabuleiroCasas.INICIO_CORONEL_MUSTARD); break;
+                case "Srta. Scarlet":   j.setPosicaoAtual(TabuleiroCasas.INICIO_SRTA_SCARLET);    break;
+                case "Professor Plum":  j.setPosicaoAtual(TabuleiroCasas.INICIO_PROF_PLUM);       break;
+                case "Reverendo Green": j.setPosicaoAtual(TabuleiroCasas.INICIO_REV_GREEN);       break;
+                case "Sra. White":      j.setPosicaoAtual(TabuleiroCasas.INICIO_SRA_WHITE);       break;
+                case "Sra. Peacock":    j.setPosicaoAtual(TabuleiroCasas.INICIO_SRA_PEACOCK);     break;
+            }
+        }
+    }
+    
+    MapeaCasas getMapeaCasas() {
+        return mapeaCasas;
     }
 
     private int encontrarSrtaScarlet() {
@@ -62,29 +80,27 @@ class Jogo {
 
     // APENAS PARA DEBUG -- RETIRAR DEPOIS
     public static void main(String[] args) {
-    List<Jogador> jogadores = new ArrayList<>();
+        List<Jogador> jogadores = new ArrayList<>();
         jogadores.add(new Jogador("Coronel Mustard"));
         jogadores.add(new Jogador("Srta. Scarlet"));
         jogadores.add(new Jogador("Professor Plum"));
-        jogadores.add(new Jogador("Reverendo Green"));
-        jogadores.add(new Jogador("Sra. White"));
-        jogadores.add(new Jogador("Sra. Peacock"));
-        
 
         Jogo jogo = new Jogo(jogadores);
 
-        System.out.println("=== Envelope Confidencial ===");
-        System.out.println(jogo.getBaralho().getEnvelopeConfidencial());
-
-        System.out.println("\n=== Maos dos jogadores ===");
+        // Testa posições iniciais
+        System.out.println("=== Posicoes iniciais ===");
         for (Jogador j : jogo.getJogadores()) {
-            System.out.println(j);
+            System.out.println(j.getNome() + ": casa " + j.getPosicaoAtual());
         }
 
-        System.out.println("\n=== Ordem dos turnos ===");
-        for (int i = 0; i < jogadores.size(); i++) {
-            System.out.println("Turno " + (i + 1) + ": " + jogo.getJogadorAtual().getNome());
-            jogo.proximoJogador();
-        }
+        // Testa MapeaCasas: Srta. Scarlet começa em 681, dado=3
+        Jogador scarlet = jogo.getJogadorAtual();
+        System.out.println("\n=== Teste MapeaCasas ===");
+        System.out.println("Jogador atual: " + scarlet.getNome());
+        System.out.println("Posicao atual: " + scarlet.getPosicaoAtual());
+        java.util.Set<Integer> alcancaveis = jogo.getMapeaCasas()
+            .mapearCasas(new int[]{3}, scarlet.getPosicaoAtual());
+        System.out.println("Casas alcancaveis com dado=3: " + alcancaveis);
+        System.out.println("Quantidade: " + alcancaveis.size());
     }
 }
