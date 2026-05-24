@@ -2,17 +2,17 @@ package model;
 
 import java.util.*;
 
-class MapeaCasas {
+public class MapeaCasas {
     private final Map<Integer, List<Integer>> adj;
 
-    MapeaCasas(Map<Integer, List<Integer>> adj) {
+    public MapeaCasas(Map<Integer, List<Integer>> adj) {
         this.adj = new HashMap<>();
         for (Map.Entry<Integer, List<Integer>> e : adj.entrySet()) {
             this.adj.put(e.getKey(), new ArrayList<>(e.getValue()));
         }
     }
 
-    Set<Integer> mapearCasas(int[] dados, int casaInicial) {
+    public Set<Integer> mapearCasas(int[] dados, int casaInicial) {
         int totalPassos = 0;
         for (int d : dados) totalPassos += d;
 

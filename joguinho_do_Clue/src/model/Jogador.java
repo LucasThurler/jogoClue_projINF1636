@@ -3,13 +3,13 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-class Jogador {
+public class Jogador {
     private String nome;
     private List<Carta> mao;
     private List<String> blocoDeNotas;
     private int posicaoAtual;
 
-    Jogador(String nome) {
+    public Jogador(String nome) {
         this.nome = nome;
         this.mao = new ArrayList<>();
         this.blocoDeNotas = new ArrayList<>();
@@ -33,11 +33,11 @@ class Jogador {
         return blocoDeNotas;
     }
 
-    String getNome() {
+    public String getNome() {
         return nome;
     }
     
-    int getPosicaoAtual() {
+    public int getPosicaoAtual() {
         return posicaoAtual;
     }
 

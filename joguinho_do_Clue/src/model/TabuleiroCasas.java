@@ -2,11 +2,11 @@ package model;
 
 import java.util.*;
 
-class TabuleiroCasas {
+public class TabuleiroCasas {
 
     // Dimensoes da grade
-    static final int COLS = 28;
-    static final int ROWS = 27;
+	public static final int COLS = 28;
+	public static final int ROWS = 27;
 
     // IDs dos comodos
     static final int COZINHA        = 1000;
@@ -29,9 +29,9 @@ class TabuleiroCasas {
     static final int INICIO_PROF_PLUM       = 19 * 28 + 25; // 557
 
     // Configuracoes da grade para a View
-    static final int GRID_X0   = 0;
-    static final int GRID_Y0   = 50;
-    static final int CELL_SIZE = 25;
+    public static final int GRID_X0   = 0;
+    public static final int GRID_Y0   = 50;
+    public static final int CELL_SIZE = 25;
 
     private static Set<Integer> bloqueadas;
     private static Map<Integer, Integer> portasParaComodo;
@@ -47,12 +47,12 @@ class TabuleiroCasas {
         return row * COLS + col;
     }
 
-    static int[] cellPos(int id) {
+    public static int[] cellPos(int id) {
         return new int[]{id / COLS, id % COLS};
     }
 
     // Pixel -> casaId (para clique do mouse na View)
-    static int pixelParaCasa(int px, int py) {
+    public static int pixelParaCasa(int px, int py) {
         int col = (px - GRID_X0) / CELL_SIZE;
         int row = (py - GRID_Y0) / CELL_SIZE;
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return -1;
@@ -60,7 +60,7 @@ class TabuleiroCasas {
     }
 
     // CasaId -> pixel central (para desenhar o peao na View)
-    static int[] casaParaPixel(int casaId) {
+    public static int[] casaParaPixel(int casaId) {
         if (casaId >= 1000) {
             return centroComodo(casaId);
         }
@@ -70,11 +70,11 @@ class TabuleiroCasas {
         return new int[]{px, py};
     }
 
-    static boolean isBloqueada(int row, int col) {
+    public static boolean isBloqueada(int row, int col) {
         return bloqueadas.contains(cellId(row, col));
     }
 
-    static boolean isComodo(int casaId) {
+    public static boolean isComodo(int casaId) {
         return casaId >= 1000;
     }
 

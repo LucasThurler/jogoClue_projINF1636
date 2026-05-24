@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-class Baralho {
+public class Baralho {
     private HashMap<TipoCarta, List<Carta>> cartas;
     private HashMap<TipoCarta, Carta> envelopeConfidencial;
 

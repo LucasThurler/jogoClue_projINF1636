@@ -1,6 +1,6 @@
 package model;
 
-class Carta {
+public class Carta {
     private String nome;
     private TipoCarta tipo;
 

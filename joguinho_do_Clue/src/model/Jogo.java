@@ -8,13 +8,13 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-class Jogo {
+public class Jogo {
     private List<Jogador> jogadores;
     private int indiceJogadorAtual;
     private Baralho baralho;
     private MapeaCasas mapeaCasas;
 
-    Jogo(List<Jogador> jogadores) {
+    public Jogo(List<Jogador> jogadores) {
         if (jogadores.size() < 3 || jogadores.size() > 6) {
             throw new IllegalArgumentException("O jogo deve ter entre 3 e 6 jogadores.");
         }
@@ -48,7 +48,7 @@ class Jogo {
         }
     }
     
-    MapeaCasas getMapeaCasas() {
+    public MapeaCasas getMapeaCasas() {
         return mapeaCasas;
     }
 
@@ -62,19 +62,19 @@ class Jogo {
         return 0;
     }
 
-    Jogador getJogadorAtual() {
+    public Jogador getJogadorAtual() {
         return jogadores.get(indiceJogadorAtual);
     }
 
-    void proximoJogador() {
+    public void proximoJogador() {
         indiceJogadorAtual = (indiceJogadorAtual + 1) % jogadores.size();
     }
 
-    List<Jogador> getJogadores() {
+    public List<Jogador> getJogadores() {
         return jogadores;
     }
 
-    Baralho getBaralho() {
+    public Baralho getBaralho() {
         return baralho;
     }
 

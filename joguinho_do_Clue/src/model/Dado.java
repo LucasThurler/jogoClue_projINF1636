@@ -2,15 +2,15 @@ package model;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-class Dado{
+public class Dado{
     private final int numFaces;
     private int valorAtual;
 
-    Dado(int numFaces) {
+    public Dado(int numFaces) {
         this.numFaces = numFaces;
     }
 
-    int lancar(){
+    public int lancar(){
         valorAtual = ThreadLocalRandom.current().nextInt(1, numFaces + 1);
         return valorAtual;
     }
