@@ -186,14 +186,9 @@ public class TelaTabuleiro extends JFrame {
             g2.setColor(Color.DARK_GRAY);
             g2.fillRect(0, 0, getWidth(), getHeight());
 
-            // Tabuleiro via drawImage (obrigatório pelo professor)
+            // Tabuleiro via drawImage (obrigatório)
             if (imgTabuleiro != null) {
-                int largura  = TabuleiroCasas.COLS * TabuleiroCasas.CELL_SIZE;
-                int altura   = TabuleiroCasas.ROWS * TabuleiroCasas.CELL_SIZE;
-                g2.drawImage(imgTabuleiro,
-                    TabuleiroCasas.GRID_X0,
-                    TabuleiroCasas.GRID_Y0,
-                    largura, altura, null);
+            	g2.drawImage(imgTabuleiro, 0, 0, 700, 725, null);
             }
 
             // Destaca casas alcançáveis em amarelo semitransparente
@@ -234,7 +229,7 @@ public class TelaTabuleiro extends JFrame {
             g2.setStroke(new BasicStroke(2.5f));
             g2.drawOval(pixelAtual[0] - raio, pixelAtual[1] - raio, raio * 2, raio * 2);
 
-            // Dados via drawImage (obrigatório pelo professor)
+            // Dados via drawImage (obrigatório)
             if (dadosLancados && imgDados.containsKey(valoresDados[0])
                                && imgDados.containsKey(valoresDados[1])) {
                 g2.drawImage(imgDados.get(valoresDados[0]), 750, 230, 60, 60, null);

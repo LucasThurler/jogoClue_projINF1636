@@ -26,8 +26,9 @@ public class MapeaCasas {
         while (!fila.isEmpty()) {
             Node atual = fila.poll();
 
-            if (atual.passos > 0) {
+            if (atual.passos == totalPassos) {
                 alcancaveis.add(atual.pos);
+                continue;
             }
 
             if (atual.passos == totalPassos) continue;
