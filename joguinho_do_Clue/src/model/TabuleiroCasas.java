@@ -39,12 +39,13 @@ public class TabuleiroCasas {
     public static final int CELL_SIZE = 25;
 
     private static final Set<Integer> bloqueadas = new HashSet<>();
-    // porta (cellId) -> comodoId: usada apenas para construir o grafo
     private static final Map<Integer, Integer> portasParaComodo = new HashMap<>();
+    private static final Map<Integer, Integer> celulaParaComodo = new HashMap<>();
 
     static {
         inicializarBloqueadas();
         inicializarPortas();
+        inicializarCelulaParaComodo();
     }
 
     static int cellId(int row, int col) {
@@ -59,7 +60,22 @@ public class TabuleiroCasas {
         int col = (px - GRID_X0) / CELL_SIZE;
         int row = (py - GRID_Y0) / CELL_SIZE;
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return -1;
-        return cellId(row, col);
+        int cid = cellId(row, col);
+
+        // Se for celula bloqueada interior de comodo, retorna o ID do comodo
+        if (celulaParaComodo.containsKey(cid)) {
+            return celulaParaComodo.get(cid);
+        }
+
+        // Se for porta, retorna o ID do comodo correspondente
+        if (portasParaComodo.containsKey(cid)) {
+            return portasParaComodo.get(cid);
+        }
+
+        // Se for bloqueada por outro motivo (borda), retorna -1
+        if (bloqueadas.contains(cid)) return -1;
+
+        return cid;
     }
 
     public static int[] casaParaPixel(int casaId) {
@@ -74,13 +90,12 @@ public class TabuleiroCasas {
         return casaId >= 1000;
     }
 
-    // Verifica se um comodo tem passagem secreta
     public static int passagemSecreta(int comodoId) {
         for (int[] par : PASSAGENS_SECRETAS) {
             if (par[0] == comodoId) return par[1];
             if (par[1] == comodoId) return par[0];
         }
-        return -1; // sem passagem secreta
+        return -1;
     }
 
     public static String nomeComodo(int comodoId) {
@@ -105,8 +120,6 @@ public class TabuleiroCasas {
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
                 int cid = cellId(r, c);
-
-                // Portas e bloqueadas nao sao nos do grafo
                 if (bloqueadas.contains(cid) || portasParaComodo.containsKey(cid)) continue;
 
                 List<Integer> vizinhos = new ArrayList<>();
@@ -118,7 +131,6 @@ public class TabuleiroCasas {
                     int nid = cellId(nr, nc);
 
                     if (portasParaComodo.containsKey(nid)) {
-                        // Vizinho e uma porta: aponta direto pro comodo
                         int comodoId = portasParaComodo.get(nid);
                         if (!vizinhos.contains(comodoId)) vizinhos.add(comodoId);
                     } else if (!bloqueadas.contains(nid)) {
@@ -129,7 +141,6 @@ public class TabuleiroCasas {
             }
         }
 
-        // Saidas dos comodos: comodo aponta para celulas externas adjacentes a cada porta
         for (Map.Entry<Integer, Integer> e : portasParaComodo.entrySet()) {
             int portaId  = e.getKey();
             int comodoId = e.getValue();
@@ -142,15 +153,11 @@ public class TabuleiroCasas {
                 int nr = porta[0] + d[0], nc = porta[1] + d[1];
                 if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
                 int nid = cellId(nr, nc);
-                // Apenas celulas externas caminhaveis (nao porta, nao bloqueada)
                 if (!bloqueadas.contains(nid) && !portasParaComodo.containsKey(nid)) {
                     if (!adj.get(comodoId).contains(nid)) adj.get(comodoId).add(nid);
                 }
             }
         }
-
-        // Passagens secretas (custo 0 de passos — tratado no controller, nao no grafo)
-        // NAO adicionamos aqui pois passagem secreta substitui o lancamento dos dados
 
         return adj;
     }
@@ -205,6 +212,33 @@ public class TabuleiroCasas {
         portasParaComodo.put(cellId(20,17), ENTRADA);
         portasParaComodo.put(cellId(17,13), ENTRADA);
         portasParaComodo.put(cellId(17,14), ENTRADA);
+    }
+
+    private static void inicializarCelulaParaComodo() {
+        int[][] regioes = {
+            {0,  6,  2,  7,  COZINHA},
+            {1,  7,  10, 17, SALA_MUSICA},
+            {1,  5,  20, 25, JARDIM_INVERNO},
+            {8,  12, 20, 25, SALAO_JOGOS},
+            {9,  15, 2,  9,  SALA_JANTAR},
+            {10, 16, 12, 16, DETETIVE},
+            {14, 18, 19, 25, BIBLIOTECA},
+            {19, 24, 2,  8,  SALA_ESTAR},
+            {18, 24, 11, 16, ENTRADA},
+            {21, 24, 19, 25, ESCRITORIO}
+        };
+
+        for (int[] reg : regioes) {
+            int r0 = reg[0], r1 = reg[1], c0 = reg[2], c1 = reg[3], comodoId = reg[4];
+            for (int r = r0; r <= r1; r++) {
+                for (int c = c0; c <= c1; c++) {
+                    int cid = cellId(r, c);
+                    if (bloqueadas.contains(cid)) {
+                        celulaParaComodo.put(cid, comodoId);
+                    }
+                }
+            }
+        }
     }
 
     private static int[] centroComodo(int comodoId) {
