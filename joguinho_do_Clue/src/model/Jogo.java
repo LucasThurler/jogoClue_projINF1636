@@ -48,6 +48,14 @@ public class Jogo {
         }
     }
     
+    public void usarPassagemSecreta() {
+        int posAtual = getJogadorAtual().getPosicaoAtual();
+        int destino  = TabuleiroCasas.passagemSecreta(posAtual);
+        if (destino != -1) {
+            getJogadorAtual().setPosicaoAtual(destino);
+        }
+    }
+    
     public MapeaCasas getMapeaCasas() {
         return mapeaCasas;
     }
