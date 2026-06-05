@@ -31,22 +31,17 @@ public class CarregarSave {
     public static void carregar(Jogo jogo, File arquivo) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(arquivo));
-
             int numJogadores = Integer.parseInt(br.readLine().trim());
 
+            Map<String, Integer> posicoes = new HashMap<>();
             for (int i = 0; i < numJogadores; i++) {
-                String nome     = br.readLine().trim();
-                int posicao     = Integer.parseInt(br.readLine().trim());
-
-                for (Jogador j : jogo.getJogadores()) {
-                    if (j.getNome().equals(nome)) {
-                        j.setPosicaoAtual(posicao);
-                        break;
-                    }
-                }
+                String nome  = br.readLine().trim();
+                int posicao  = Integer.parseInt(br.readLine().trim());
+                posicoes.put(nome, posicao);
             }
 
             br.close();
+            jogo.carregarPosicoes(posicoes);
             System.out.println("Jogo carregado de: " + arquivo.getPath());
         } catch (Exception e) {
             System.out.println("Erro ao carregar save: " + e.getMessage());

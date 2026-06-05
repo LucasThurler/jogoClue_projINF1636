@@ -28,7 +28,7 @@ public class TelaInicio extends JFrame {
 
     private void carregarImagem() {
         try {
-            imgFundo = ImageIO.read(new File("src/Imagens/Telas/TelaInicio.jpg"));
+            imgFundo = ImageIO.read(new File("src/Imagens/Telas/TelaInicial.jpg"));
         } catch (Exception e) {
             System.out.println("Erro ao carregar tela de inicio: " + e.getMessage());
         }

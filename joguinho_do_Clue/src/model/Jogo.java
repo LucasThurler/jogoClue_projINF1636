@@ -7,6 +7,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Jogo {
     private List<Jogador> jogadores;
@@ -84,6 +85,14 @@ public class Jogo {
 
     public Baralho getBaralho() {
         return baralho;
+    }
+    
+    public void carregarPosicoes(Map<String, Integer> posicoes) {
+        for (Jogador j : jogadores) {
+            if (posicoes.containsKey(j.getNome())) {
+                j.setPosicaoAtual(posicoes.get(j.getNome()));
+            }
+        }
     }
 
     // APENAS PARA DEBUG -- RETIRAR DEPOIS
