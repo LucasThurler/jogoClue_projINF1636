@@ -39,15 +39,15 @@ public class Baralho {
     adicionarCarta("Revolver", TipoCarta.ARMA);
 
     // 9 cômodos
-    adicionarCarta("Comodo 1", TipoCarta.COMODO);
-    adicionarCarta("Comodo 2", TipoCarta.COMODO);
-    adicionarCarta("Comodo 3", TipoCarta.COMODO);
-    adicionarCarta("Comodo 4", TipoCarta.COMODO);
-    adicionarCarta("Comodo 5", TipoCarta.COMODO);
-    adicionarCarta("Comodo 6", TipoCarta.COMODO);
-    adicionarCarta("Comodo 7", TipoCarta.COMODO);
-    adicionarCarta("Comodo 8", TipoCarta.COMODO);
-    adicionarCarta("Comodo 9", TipoCarta.COMODO);
+    adicionarCarta("Cozinha",           TipoCarta.COMODO);
+    adicionarCarta("Sala de Música",    TipoCarta.COMODO);
+    adicionarCarta("Jardim de Inverno", TipoCarta.COMODO);
+    adicionarCarta("Salão de Jogos",    TipoCarta.COMODO);
+    adicionarCarta("Sala de Jantar",    TipoCarta.COMODO);
+    adicionarCarta("Biblioteca",        TipoCarta.COMODO);
+    adicionarCarta("Entrada",           TipoCarta.COMODO);
+    adicionarCarta("Sala de Estar",     TipoCarta.COMODO);
+    adicionarCarta("Escritório",        TipoCarta.COMODO);
 }
 
     private void adicionarCarta(String nome, TipoCarta tipo) {
