@@ -1,7 +1,7 @@
 package view;
 
 import model.*;
-
+import controller.Controller;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -29,7 +29,7 @@ public class TelaTabuleiro extends JFrame {
         setVisible(true);
     }
 
-    class PainelTabuleiro extends JPanel implements MouseListener {
+    class PainelTabuleiro extends JPanel implements MouseListener, ObservadorIF {
 
         private Jogo jogo;
         private BufferedImage imgTabuleiro;
@@ -67,6 +67,11 @@ public class TelaTabuleiro extends JFrame {
             configurarLayout();
             addMouseListener(this);
             atualizarBotoesPassagem();
+            
+            // Registra este painel como observador via Controller
+            Controller.getInstance().inicializarPartida(jogo.getJogadores()); // se ainda não inicializado
+            // Se o jogo já foi criado externamente, apenas registra:
+            jogo.add(this);
         }
 
         private void carregarImagens() {
@@ -150,6 +155,43 @@ public class TelaTabuleiro extends JFrame {
                 }
             });
             add(btnProximo);
+            
+            JButton btnVerCartas = new JButton("Ver Cartas");
+            btnVerCartas.setBounds(750, 295, 150, 35);
+            btnVerCartas.addActionListener(e -> {
+                new TelaCartas(
+                    (JFrame) SwingUtilities.getWindowAncestor(this),
+                    jogo.getJogadorAtual()
+                );
+                jogo.setDados(jogo.get(1), jogo.get(2)); // dispara Observer
+            });
+            add(btnVerCartas);
+            
+            JButton btnSugestao = new JButton("Sugestão");
+            btnSugestao.setBounds(750, 340, 150, 35);
+            btnSugestao.addActionListener(e -> {
+                int pos = jogo.getJogadorAtual().getPosicaoAtual();
+                if (!TabuleiroCasas.isComodo(pos)) {
+                    lblStatus.setText("Você precisa estar em um cômodo.");
+                    return;
+                }
+                new TelaSugestao(
+                    (JFrame) SwingUtilities.getWindowAncestor(this),
+                    jogo
+                );
+            });
+            add(btnSugestao);
+            
+            JButton btnBloco = new JButton("Bloco de Notas");
+            btnBloco.setBounds(750, 385, 150, 35);
+            btnBloco.addActionListener(e -> {
+                new TelaBlocoNotas(
+                    (JFrame) SwingUtilities.getWindowAncestor(this),
+                    jogo.getJogadorAtual()
+                );
+                jogo.setDados(jogo.get(1), jogo.get(2)); // notifica Observer
+            });
+            add(btnBloco);
         }
 
         // Verifica se o jogador atual pode usar passagem secreta
@@ -175,25 +217,23 @@ public class TelaTabuleiro extends JFrame {
         }
 
         private void lancarDados() {
+            int d1, d2;
             boolean usarCombo = (combo1.getSelectedIndex() > 0 || combo2.getSelectedIndex() > 0);
             if (usarCombo) {
-                valoresDados[0] = (Integer) combo1.getSelectedItem();
-                valoresDados[1] = (Integer) combo2.getSelectedItem();
+                d1 = (Integer) combo1.getSelectedItem();
+                d2 = (Integer) combo2.getSelectedItem();
             } else {
-                Dado d1 = new Dado(6);
-                Dado d2 = new Dado(6);
-                valoresDados[0] = d1.lancar();
-                valoresDados[1] = d2.lancar();
+                d1 = new Dado(6).lancar();
+                d2 = new Dado(6).lancar();
             }
+            valoresDados[0] = d1;
+            valoresDados[1] = d2;
 
-            int totalPassos = valoresDados[0] + valoresDados[1];
+            jogo.setDados(d1, d2); // <<< notifica observers
+
+            int totalPassos = d1 + d2;
             lblPassos.setText("Passos: " + totalPassos);
-
-            casasAlcancaveis = jogo.getMapeaCasas().mapearCasas(
-                valoresDados,
-                jogo.getJogadorAtual().getPosicaoAtual()
-            );
-
+            casasAlcancaveis = jogo.getMapeaCasas().mapearCasas(valoresDados, jogo.getJogadorAtual().getPosicaoAtual());
             dadosLancados = true;
             btnJogarDados.setEnabled(false);
             btnPassagemSecreta.setEnabled(false);
@@ -280,6 +320,14 @@ public class TelaTabuleiro extends JFrame {
             // Barra lateral colorida com a cor do jogador atual
             g2.setColor(CORES_PERSONAGENS.getOrDefault(atual.getNome(), Color.GRAY));
             g2.fillRect(735, 50, 5, getHeight() - 50);
+        }
+        
+        
+        @Override
+        public void notify(ObservadoIF o) {
+            // Atualiza estado local a partir do model
+            lblJogadorAtual.setText("Vez de: " + jogo.getJogadorAtual().getNome());
+            repaint();
         }
 
         public void mouseClicked(MouseEvent e) {

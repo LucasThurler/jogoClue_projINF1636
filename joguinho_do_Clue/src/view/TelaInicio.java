@@ -28,7 +28,11 @@ public class TelaInicio extends JFrame {
 
     private void carregarImagem() {
         try {
+<<<<<<< HEAD
             imgFundo = ImageIO.read(new File("src/Imagens/Telas/TelaInicial.jpg"));
+=======
+        	imgFundo = ImageIO.read(getClass().getResourceAsStream("/Imagens/Telas/TelaInicio.jpg")); //imgFundo = ImageIO.read(new File("src/Imagens/Telas/TelaInicio.jpg"));
+>>>>>>> e52e888 (Botao de inicio, controller, bloco de notas e  cartas)
         } catch (Exception e) {
             System.out.println("Erro ao carregar tela de inicio: " + e.getMessage());
         }
@@ -76,6 +80,7 @@ public class TelaInicio extends JFrame {
                 g2.setColor(Color.BLACK);
                 g2.fillRect(0, 0, getWidth(), getHeight());
             }
+            super.paintComponent(g);
         }
     }
 }

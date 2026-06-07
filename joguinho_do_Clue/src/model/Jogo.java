@@ -1,42 +1,34 @@
-// INF1636
-// Lucas Thurler
-// Pedro Augusto
-// Douglas Gomes
-
 package model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Jogo {
+public class Jogo implements ObservadoIF {
     private List<Jogador> jogadores;
     private int indiceJogadorAtual;
     private Baralho baralho;
     private MapeaCasas mapeaCasas;
+    private List<ObservadorIF> observadores = new ArrayList<>();
+
+    // Estado exposto para a View via get()
+    private int valorDado1 = 1;
+    private int valorDado2 = 1;
 
     public Jogo(List<Jogador> jogadores) {
-        if (jogadores.size() < 3 || jogadores.size() > 6) {
+        if (jogadores.size() < 3 || jogadores.size() > 6)
             throw new IllegalArgumentException("O jogo deve ter entre 3 e 6 jogadores.");
-        }
-
         this.jogadores = jogadores;
         this.baralho = new Baralho();
-
         prepararJogo();
     }
 
     private void prepararJogo() {
-        // Regra 4 e 5
         baralho.embaralhar();
         baralho.preencherEnvelope();
         baralho.distribuirCartas(jogadores);
-        // Regra 7 - Srta. Scarlet sempre começa
         indiceJogadorAtual = encontrarSrtaScarlet();
-        // Conecta o grafo real ao MapeaCasas
         mapeaCasas = new MapeaCasas(TabuleiroCasas.construirGrafo());
-        
-        // Define posição inicial de cada jogador
         for (Jogador j : jogadores) {
             switch (j.getNome()) {
                 case "Coronel Mustard": j.setPosicaoAtual(TabuleiroCasas.INICIO_CORONEL_MUSTARD); break;
@@ -48,39 +40,58 @@ public class Jogo {
             }
         }
     }
-    
+
+    // --- ObservadoIF ---
+    @Override
+    public void add(ObservadorIF o) {
+        if (!observadores.contains(o)) observadores.add(o);
+    }
+
+    @Override
+    public void remove(ObservadorIF o) {
+        observadores.remove(o);
+    }
+
+    // Índices definidos: 1=dado1, 2=dado2, 3=posição jogador atual
+    @Override
+    public int get(int i) {
+        switch (i) {
+            case 1: return valorDado1;
+            case 2: return valorDado2;
+            case 3: return getJogadorAtual().getPosicaoAtual();
+            default: return -1;
+        }
+    }
+
+    private void atualiza() {
+        for (ObservadorIF ob : observadores) ob.notify(this);
+    }
+
+    // --- Ações do jogo (cada uma notifica os observadores) ---
+    public void setDados(int d1, int d2) {
+        this.valorDado1 = d1;
+        this.valorDado2 = d2;
+        atualiza();
+    }
+
     public void usarPassagemSecreta() {
         int posAtual = getJogadorAtual().getPosicaoAtual();
-        int destino  = TabuleiroCasas.passagemSecreta(posAtual);
+        int destino = TabuleiroCasas.passagemSecreta(posAtual);
         if (destino != -1) {
             getJogadorAtual().setPosicaoAtual(destino);
+            atualiza();
         }
-    }
-    
-    public MapeaCasas getMapeaCasas() {
-        return mapeaCasas;
-    }
-
-    private int encontrarSrtaScarlet() {
-        for (int i = 0; i < jogadores.size(); i++) {
-            if (jogadores.get(i).getNome().equals("Srta. Scarlet")) {
-                return i;
-            }
-        }
-        // Se Srta. Scarlet não estiver entre os jogadores, começa pelo primeiro
-        return 0;
-    }
-
-    public Jogador getJogadorAtual() {
-        return jogadores.get(indiceJogadorAtual);
     }
 
     public void proximoJogador() {
         indiceJogadorAtual = (indiceJogadorAtual + 1) % jogadores.size();
+        atualiza();
     }
 
-    public List<Jogador> getJogadores() {
-        return jogadores;
+    private int encontrarSrtaScarlet() {
+        for (int i = 0; i < jogadores.size(); i++)
+            if (jogadores.get(i).getNome().equals("Srta. Scarlet")) return i;
+        return 0;
     }
 
     public Baralho getBaralho() {
@@ -119,5 +130,17 @@ public class Jogo {
             .mapearCasas(new int[]{3}, scarlet.getPosicaoAtual());
         System.out.println("Casas alcancaveis com dado=3: " + alcancaveis);
         System.out.println("Quantidade: " + alcancaveis.size());
+    }
+
+    public List<Jogador> getJogadores() {
+        return jogadores;
+    }
+
+    public Jogador getJogadorAtual() {
+        return jogadores.get(indiceJogadorAtual);
+    }
+
+    public MapeaCasas getMapeaCasas() {
+        return mapeaCasas;
     }
 }

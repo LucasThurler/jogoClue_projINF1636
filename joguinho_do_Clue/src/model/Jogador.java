@@ -29,9 +29,11 @@ public class Jogador {
     }
 
     //Regra 6 - Bloco de notas para anotações
-    List<String> getBlocoDeNotas() {
-        return blocoDeNotas;
-    }
+    //List<String> getBlocoDeNotas() {
+    //    return blocoDeNotas;
+    //}
+    public List<String> getBlocoDeNotas() { return blocoDeNotas; }
+    public void anotarNoBloco(String anotacao) { blocoDeNotas.add(anotacao); }
 
     public String getNome() {
         return nome;

@@ -21,4 +21,9 @@ public class Carta {
     public String toString() {
         return tipo + ": " + nome;
     }
+    
+    public List<Carta> getMao() { 
+    	return mao; 
+    	}
 }
+
