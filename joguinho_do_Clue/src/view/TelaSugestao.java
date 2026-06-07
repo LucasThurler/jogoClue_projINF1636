@@ -4,6 +4,7 @@ import model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TelaSugestao extends JDialog {
@@ -17,6 +18,8 @@ public class TelaSugestao extends JDialog {
         "Corda", "Cano de Chumbo", "Faca",
         "Chave Inglesa", "Castical", "Revolver"
     };
+
+    private boolean palpiteConfirmado = false;
 
     public TelaSugestao(JFrame parent, Jogo jogo) {
         super(parent, "Fazer Sugestão", true);
@@ -59,10 +62,13 @@ public class TelaSugestao extends JDialog {
         btnConfirmar.setBounds(20, 140, 100, 30);
         btnConfirmar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if (palpiteConfirmado) return; // bloqueia segundo clique
                 String suspeito = (String) comboSuspeito.getSelectedItem();
                 String arma     = (String) comboArma.getSelectedItem();
                 String resposta = verificarSugestao(jogo, suspeito, arma, comodoAtual);
                 lblResultado.setText(resposta);
+                palpiteConfirmado = true;
+                btnConfirmar.setEnabled(false); // desabilita após primeiro uso
             }
         });
         painel.add(btnConfirmar);
@@ -83,23 +89,52 @@ public class TelaSugestao extends JDialog {
     }
 
     private String verificarSugestao(Jogo jogo, String suspeito, String arma, String comodo) {
-        Jogador atual = jogo.getJogadorAtual();
         List<Jogador> jogadores = jogo.getJogadores();
+        Jogador atual = jogo.getJogadorAtual();
+        int indiceAtual = jogadores.indexOf(atual);
+        int total = jogadores.size();
 
-        for (Jogador j : jogadores) {
-            if (j == atual) continue;
+        for (int i = 1; i < total; i++) {
+            Jogador j = jogadores.get((indiceAtual + i) % total);
+
+            List<String> cartasRefutaveis = new ArrayList<>();
             for (Carta c : j.getMao()) {
                 String nome = c.getNome();
-                if (nome.equals(suspeito)) {
-                    return j.getNome() + " mostrou uma carta de suspeito: " + suspeito;
+                if (nome.equals(suspeito) || nome.equals(arma) || nome.equals(comodo)) {
+                    cartasRefutaveis.add(nome);
                 }
-                else if (nome.equals(arma)) {
-                    return j.getNome() + " mostrou uma carta de arma: " + arma;
-                }
-                else if (nome.equals(comodo)) {
-                    return j.getNome() + " mostrou uma carta de comodo: " + comodo;
-                }
+            }
 
+            if (!cartasRefutaveis.isEmpty()) {
+                String[] opcoes = cartasRefutaveis.toArray(new String[0]);
+
+                // Dialogo sem opcao de cancelar — jogador e obrigado a mostrar uma carta
+                JPanel painelEscolha = new JPanel(new BorderLayout(10, 10));
+                painelEscolha.add(new JLabel(j.getNome() + " deve mostrar uma carta:"), BorderLayout.NORTH);
+
+                JComboBox<String> comboEscolha = new JComboBox<>(opcoes);
+                painelEscolha.add(comboEscolha, BorderLayout.CENTER);
+
+                final String[] escolhida = {opcoes[0]};
+
+                JDialog dialogo = new JDialog(this, "Refutação", true);
+                dialogo.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+                JButton btnMostrar = new JButton("Mostrar");
+                btnMostrar.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        escolhida[0] = (String) comboEscolha.getSelectedItem();
+                        dialogo.dispose();
+                    }
+                });
+
+                painelEscolha.add(btnMostrar, BorderLayout.SOUTH);
+                dialogo.setContentPane(painelEscolha);
+                dialogo.pack();
+                dialogo.setLocationRelativeTo(this);
+                dialogo.setVisible(true);
+
+                return j.getNome() + " mostrou: " + escolhida[0];
             }
         }
         return "Ninguém refutou a sugestão.";

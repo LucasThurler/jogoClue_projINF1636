@@ -38,6 +38,7 @@ public class TelaTabuleiro extends JFrame {
         private Set<Integer> casasAlcancaveis;
         private boolean dadosLancados;
         private boolean passagemUsada;
+        private boolean palpiteFeito;
 
         private static final Map<String, Color> CORES_PERSONAGENS = new HashMap<>();
         static {
@@ -62,6 +63,7 @@ public class TelaTabuleiro extends JFrame {
             this.casasAlcancaveis = new HashSet<>();
             this.dadosLancados  = false;
             this.passagemUsada  = false;
+            this.palpiteFeito = false;
 
             carregarImagens();
             configurarLayout();
@@ -164,7 +166,7 @@ public class TelaTabuleiro extends JFrame {
             add(btnVerCartas);
 
             JButton btnSugestao = new JButton("Sugestão");
-            btnSugestao.setBounds(750, 580, 150, 35);
+            btnSugestao.setBounds(750, 340, 150, 35);
             btnSugestao.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     int pos = jogo.getJogadorAtual().getPosicaoAtual();
@@ -172,7 +174,15 @@ public class TelaTabuleiro extends JFrame {
                         lblStatus.setText("Você precisa estar em um cômodo.");
                         return;
                     }
-                    new TelaSugestao(TelaTabuleiro.this, jogo);
+                    if (palpiteFeito) {
+                        lblStatus.setText("Você já fez um palpite neste turno.");
+                        return;
+                    }
+                    palpiteFeito = true; 
+                    new TelaSugestao(
+                    		(JFrame) SwingUtilities.getWindowAncestor(PainelTabuleiro.this),
+                        jogo
+                    );
                 }
             });
             add(btnSugestao);
@@ -237,6 +247,7 @@ public class TelaTabuleiro extends JFrame {
             jogo.proximoJogador();
             dadosLancados  = false;
             passagemUsada  = false;
+            palpiteFeito   = false;
             casasAlcancaveis = new HashSet<>();
             lblJogadorAtual.setText("Vez de: " + jogo.getJogadorAtual().getNome());
             lblPassos.setText("Passos: -");
