@@ -20,11 +20,11 @@ public class Jogador {
         mao.add(carta);
     }
 
-    void anotarNoBloco(String anotacao) {
+    public void anotarNoBloco(String anotacao) {
         blocoDeNotas.add(anotacao);
     }
 
-    List<Carta> getMao() {
+    public List<Carta> getMao() {
         return mao;
     }
 
@@ -33,7 +33,6 @@ public class Jogador {
     //    return blocoDeNotas;
     //}
     public List<String> getBlocoDeNotas() { return blocoDeNotas; }
-    public void anotarNoBloco(String anotacao) { blocoDeNotas.add(anotacao); }
 
     public String getNome() {
         return nome;

@@ -96,7 +96,7 @@ public class TelaPersonagens extends JFrame {
 
         // Botão Jogar
         JButton btnJogar = new JButton("Jogar");
-        btnJogar.setBounds(580, 800, 140, 45); //btnJogar.setBounds(630, 950, 140, 45);
+        btnJogar.setBounds(830, 600, 140, 45); //btnJogar.setBounds(580, 800, 140, 45);
         btnJogar.setFont(new Font("Arial", Font.BOLD, 16));
         btnJogar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

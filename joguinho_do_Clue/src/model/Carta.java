@@ -9,7 +9,7 @@ public class Carta {
         this.tipo = tipo;
     }
 
-    String getNome() {
+    public String getNome() {
         return nome;
     }
 
@@ -22,8 +22,8 @@ public class Carta {
         return tipo + ": " + nome;
     }
     
-    public List<Carta> getMao() { 
-    	return mao; 
-    	}
+//    public List<Carta> getMao() { 
+//    	return mao; 
+//    	}
 }
 

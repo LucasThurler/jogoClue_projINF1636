@@ -3,6 +3,7 @@ package view;
 import model.Jogador;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class TelaBlocoNotas extends JDialog {
 
@@ -23,7 +24,6 @@ public class TelaBlocoNotas extends JDialog {
         areaTexto.setForeground(Color.WHITE);
         areaTexto.setCaretColor(Color.WHITE);
 
-        // Carrega anotações existentes
         for (String anotacao : jogador.getBlocoDeNotas()) {
             areaTexto.append(anotacao + "\n");
         }
@@ -35,17 +35,23 @@ public class TelaBlocoNotas extends JDialog {
         rodape.setBackground(Color.DARK_GRAY);
 
         JButton btnSalvar = new JButton("Salvar");
-        btnSalvar.addActionListener(e -> {
-            jogador.getBlocoDeNotas().clear();
-            for (String linha : areaTexto.getText().split("\n")) {
-                if (!linha.trim().isEmpty())
-                    jogador.anotarNoBloco(linha);
+        btnSalvar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                jogador.getBlocoDeNotas().clear();
+                for (String linha : areaTexto.getText().split("\n")) {
+                    if (!linha.trim().isEmpty())
+                        jogador.anotarNoBloco(linha);
+                }
+                dispose();
             }
-            dispose();
         });
 
         JButton btnFechar = new JButton("Fechar");
-        btnFechar.addActionListener(e -> dispose());
+        btnFechar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
 
         rodape.add(btnSalvar);
         rodape.add(btnFechar);

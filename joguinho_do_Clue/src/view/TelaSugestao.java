@@ -1,9 +1,9 @@
 package view;
 
 import model.*;
-import controller.Controller;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
 
 public class TelaSugestao extends JDialog {
@@ -57,20 +57,24 @@ public class TelaSugestao extends JDialog {
 
         JButton btnConfirmar = new JButton("Sugerir");
         btnConfirmar.setBounds(20, 140, 100, 30);
-        btnConfirmar.addActionListener(e -> {
-            String suspeito = (String) comboSuspeito.getSelectedItem();
-            String arma     = (String) comboArma.getSelectedItem();
-
-            // Verifica nas mãos dos outros jogadores
-            String resposta = verificarSugestao(jogo, suspeito, arma, comodoAtual);
-            lblResultado.setText(resposta);
-            jogo.setDados(jogo.get(1), jogo.get(2)); // notifica Observer
+        btnConfirmar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String suspeito = (String) comboSuspeito.getSelectedItem();
+                String arma     = (String) comboArma.getSelectedItem();
+                String resposta = verificarSugestao(jogo, suspeito, arma, comodoAtual);
+                lblResultado.setText(resposta);
+                jogo.setDados(jogo.get(1), jogo.get(2));
+            }
         });
         painel.add(btnConfirmar);
 
         JButton btnFechar = new JButton("Fechar");
         btnFechar.setBounds(140, 140, 100, 30);
-        btnFechar.addActionListener(e -> dispose());
+        btnFechar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
         painel.add(btnFechar);
 
         setContentPane(painel);
