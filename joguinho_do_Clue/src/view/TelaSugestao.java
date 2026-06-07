@@ -63,7 +63,6 @@ public class TelaSugestao extends JDialog {
                 String arma     = (String) comboArma.getSelectedItem();
                 String resposta = verificarSugestao(jogo, suspeito, arma, comodoAtual);
                 lblResultado.setText(resposta);
-                jogo.setDados(jogo.get(1), jogo.get(2));
             }
         });
         painel.add(btnConfirmar);
@@ -80,6 +79,7 @@ public class TelaSugestao extends JDialog {
         setContentPane(painel);
         pack();
         setLocationRelativeTo(parent);
+        setVisible(true);
     }
 
     private String verificarSugestao(Jogo jogo, String suspeito, String arma, String comodo) {

@@ -3,6 +3,7 @@ package view;
 import model.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
 
 public class TelaCartas extends JDialog {
@@ -37,11 +38,16 @@ public class TelaCartas extends JDialog {
 
         painel.add(Box.createVerticalStrut(20));
         JButton btnFechar = new JButton("Fechar");
-        btnFechar.addActionListener(e -> dispose());
+        btnFechar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
         painel.add(btnFechar);
 
         setContentPane(painel);
         pack();
         setLocationRelativeTo(parent);
+        setVisible(true);
     }
 }

@@ -11,7 +11,6 @@ public class Jogo implements ObservadoIF {
     private MapeaCasas mapeaCasas;
     private List<ObservadorIF> observadores = new ArrayList<>();
 
-    // Estado exposto para a View via get()
     private int valorDado1 = 1;
     private int valorDado2 = 1;
 
@@ -52,7 +51,7 @@ public class Jogo implements ObservadoIF {
         observadores.remove(o);
     }
 
-    // Índices definidos: 1=dado1, 2=dado2, 3=posição jogador atual
+    // Indices: 1=dado1, 2=dado2, 3=posicao jogador atual
     @Override
     public int get(int i) {
         switch (i) {
@@ -67,7 +66,7 @@ public class Jogo implements ObservadoIF {
         for (ObservadorIF ob : observadores) ob.notify(this);
     }
 
-    // --- Ações do jogo (cada uma notifica os observadores) ---
+    // --- Acoes do jogo ---
     public void setDados(int d1, int d2) {
         this.valorDado1 = d1;
         this.valorDado2 = d2;
@@ -76,7 +75,7 @@ public class Jogo implements ObservadoIF {
 
     public void usarPassagemSecreta() {
         int posAtual = getJogadorAtual().getPosicaoAtual();
-        int destino = TabuleiroCasas.passagemSecreta(posAtual);
+        int destino  = TabuleiroCasas.passagemSecreta(posAtual);
         if (destino != -1) {
             getJogadorAtual().setPosicaoAtual(destino);
             atualiza();
@@ -88,22 +87,48 @@ public class Jogo implements ObservadoIF {
         atualiza();
     }
 
-    private int encontrarSrtaScarlet() {
-        for (int i = 0; i < jogadores.size(); i++)
-            if (jogadores.get(i).getNome().equals("Srta. Scarlet")) return i;
-        return 0;
+    public void atualizarBlocoDeNotas(String nomeJogador, List<String> novasAnotacoes) {
+        for (Jogador j : jogadores) {
+            if (j.getNome().equals(nomeJogador)) {
+                j.getBlocoDeNotas().clear();
+                for (String linha : novasAnotacoes) {
+                    j.anotarNoBloco(linha);
+                }
+                atualiza();
+                break;
+            }
+        }
     }
 
-    public Baralho getBaralho() {
-        return baralho;
-    }
-    
     public void carregarPosicoes(Map<String, Integer> posicoes) {
         for (Jogador j : jogadores) {
             if (posicoes.containsKey(j.getNome())) {
                 j.setPosicaoAtual(posicoes.get(j.getNome()));
             }
         }
+        atualiza();
+    }
+
+    private int encontrarSrtaScarlet() {
+        for (int i = 0; i < jogadores.size(); i++)
+            if (jogadores.get(i).getNome().equals("Srta. Scarlet")) return i;
+        return 0;
+    }
+
+    public Jogador getJogadorAtual() {
+        return jogadores.get(indiceJogadorAtual);
+    }
+
+    public List<Jogador> getJogadores() {
+        return jogadores;
+    }
+
+    public Baralho getBaralho() {
+        return baralho;
+    }
+
+    public MapeaCasas getMapeaCasas() {
+        return mapeaCasas;
     }
 
     // APENAS PARA DEBUG -- RETIRAR DEPOIS
@@ -115,13 +140,11 @@ public class Jogo implements ObservadoIF {
 
         Jogo jogo = new Jogo(jogadores);
 
-        // Testa posições iniciais
         System.out.println("=== Posicoes iniciais ===");
         for (Jogador j : jogo.getJogadores()) {
             System.out.println(j.getNome() + ": casa " + j.getPosicaoAtual());
         }
 
-        // Testa MapeaCasas: Srta. Scarlet começa em 681, dado=3
         Jogador scarlet = jogo.getJogadorAtual();
         System.out.println("\n=== Teste MapeaCasas ===");
         System.out.println("Jogador atual: " + scarlet.getNome());
@@ -130,17 +153,5 @@ public class Jogo implements ObservadoIF {
             .mapearCasas(new int[]{3}, scarlet.getPosicaoAtual());
         System.out.println("Casas alcancaveis com dado=3: " + alcancaveis);
         System.out.println("Quantidade: " + alcancaveis.size());
-    }
-
-    public List<Jogador> getJogadores() {
-        return jogadores;
-    }
-
-    public Jogador getJogadorAtual() {
-        return jogadores.get(indiceJogadorAtual);
-    }
-
-    public MapeaCasas getMapeaCasas() {
-        return mapeaCasas;
     }
 }

@@ -67,10 +67,6 @@ public class TelaTabuleiro extends JFrame {
             configurarLayout();
             addMouseListener(this);
             atualizarBotoesPassagem();
-            
-            // Registra este painel como observador via Controller
-            Controller.getInstance().inicializarPartida(jogo.getJogadores()); // se ainda não inicializado
-            // Se o jogo já foi criado externamente, apenas registra:
             jogo.add(this);
         }
 
@@ -136,7 +132,6 @@ public class TelaTabuleiro extends JFrame {
             combo2.setBounds(1105, 145, 60, 35);
             add(combo2);
 
-            // Botao passagem secreta — so aparece habilitado quando jogador esta num comodo de canto
             btnPassagemSecreta = new JButton("Passagem Secreta");
             btnPassagemSecreta.setBounds(750, 195, 180, 35);
             btnPassagemSecreta.addActionListener(new ActionListener() {
@@ -146,7 +141,6 @@ public class TelaTabuleiro extends JFrame {
             });
             add(btnPassagemSecreta);
 
-            // Botao proximo jogador
             JButton btnProximo = new JButton("Próximo");
             btnProximo.setBounds(750, 245, 150, 35);
             btnProximo.addActionListener(new ActionListener() {
@@ -155,47 +149,44 @@ public class TelaTabuleiro extends JFrame {
                 }
             });
             add(btnProximo);
-            
+
+            // Botoes de acao — abaixo dos dados (dados ficam em y=440)
+            // Ordem: Ver Cartas, Sugestao, Bloco de Notas
             JButton btnVerCartas = new JButton("Ver Cartas");
-            btnVerCartas.setBounds(750, 295, 150, 35);
-            btnVerCartas.addActionListener(e -> {
-                new TelaCartas(
-                    (JFrame) SwingUtilities.getWindowAncestor(this),
-                    jogo.getJogadorAtual()
-                );
-                jogo.setDados(jogo.get(1), jogo.get(2)); // dispara Observer
+            btnVerCartas.setBounds(750, 530, 150, 35);
+            btnVerCartas.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                	System.out.println("Ver Cartas clicado");
+                    new TelaCartas(TelaTabuleiro.this, jogo.getJogadorAtual());
+                    System.out.println("TelaCartas criada");
+                }
             });
             add(btnVerCartas);
-            
+
             JButton btnSugestao = new JButton("Sugestão");
-            btnSugestao.setBounds(750, 340, 150, 35);
-            btnSugestao.addActionListener(e -> {
-                int pos = jogo.getJogadorAtual().getPosicaoAtual();
-                if (!TabuleiroCasas.isComodo(pos)) {
-                    lblStatus.setText("Você precisa estar em um cômodo.");
-                    return;
+            btnSugestao.setBounds(750, 580, 150, 35);
+            btnSugestao.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    int pos = jogo.getJogadorAtual().getPosicaoAtual();
+                    if (!TabuleiroCasas.isComodo(pos)) {
+                        lblStatus.setText("Você precisa estar em um cômodo.");
+                        return;
+                    }
+                    new TelaSugestao(TelaTabuleiro.this, jogo);
                 }
-                new TelaSugestao(
-                    (JFrame) SwingUtilities.getWindowAncestor(this),
-                    jogo
-                );
             });
             add(btnSugestao);
-            
+
             JButton btnBloco = new JButton("Bloco de Notas");
-            btnBloco.setBounds(750, 385, 150, 35);
-            btnBloco.addActionListener(e -> {
-                new TelaBlocoNotas(
-                    (JFrame) SwingUtilities.getWindowAncestor(this),
-                    jogo.getJogadorAtual()
-                );
-                jogo.setDados(jogo.get(1), jogo.get(2)); // notifica Observer
+            btnBloco.setBounds(750, 630, 150, 35);
+            btnBloco.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    new TelaBlocoNotas(TelaTabuleiro.this, jogo); 
+                }
             });
             add(btnBloco);
         }
 
-        // Verifica se o jogador atual pode usar passagem secreta
-        // Regra: so pode se estiver num comodo de canto e nao tiver lancado dados ainda
         private void atualizarBotoesPassagem() {
             int posAtual = jogo.getJogadorAtual().getPosicaoAtual();
             boolean temPassagem = TabuleiroCasas.isComodo(posAtual)
@@ -229,11 +220,12 @@ public class TelaTabuleiro extends JFrame {
             valoresDados[0] = d1;
             valoresDados[1] = d2;
 
-            jogo.setDados(d1, d2); // <<< notifica observers
+            jogo.setDados(d1, d2);
 
             int totalPassos = d1 + d2;
             lblPassos.setText("Passos: " + totalPassos);
-            casasAlcancaveis = jogo.getMapeaCasas().mapearCasas(valoresDados, jogo.getJogadorAtual().getPosicaoAtual());
+            casasAlcancaveis = jogo.getMapeaCasas().mapearCasas(
+                valoresDados, jogo.getJogadorAtual().getPosicaoAtual());
             dadosLancados = true;
             btnJogarDados.setEnabled(false);
             btnPassagemSecreta.setEnabled(false);
@@ -243,8 +235,8 @@ public class TelaTabuleiro extends JFrame {
 
         private void avancarJogador() {
             jogo.proximoJogador();
-            dadosLancados   = false;
-            passagemUsada   = false;
+            dadosLancados  = false;
+            passagemUsada  = false;
             casasAlcancaveis = new HashSet<>();
             lblJogadorAtual.setText("Vez de: " + jogo.getJogadorAtual().getNome());
             lblPassos.setText("Passos: -");
@@ -261,16 +253,13 @@ public class TelaTabuleiro extends JFrame {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // Fundo
             g2.setColor(Color.DARK_GRAY);
             g2.fillRect(0, 0, getWidth(), getHeight());
 
-            // Tabuleiro no tamanho original via drawImage
             if (imgTabuleiro != null) {
                 g2.drawImage(imgTabuleiro, 0, 0, 700, 725, null);
             }
 
-            // Destaca casas alcancaveis em amarelo semitransparente
             if (dadosLancados) {
                 g2.setColor(new Color(255, 255, 0, 80));
                 for (int casaId : casasAlcancaveis) {
@@ -280,14 +269,12 @@ public class TelaTabuleiro extends JFrame {
                         int py = TabuleiroCasas.GRID_Y0 + pos[0] * TabuleiroCasas.CELL_SIZE;
                         g2.fillRect(px, py, TabuleiroCasas.CELL_SIZE, TabuleiroCasas.CELL_SIZE);
                     } else {
-                        // Destaca o comodo inteiro
                         int[] centro = TabuleiroCasas.casaParaPixel(casaId);
                         g2.fillOval(centro[0] - 20, centro[1] - 20, 40, 40);
                     }
                 }
             }
 
-            // Piaos de todos os jogadores
             for (Jogador j : jogo.getJogadores()) {
                 Color cor = CORES_PERSONAGENS.getOrDefault(j.getNome(), Color.GRAY);
                 int[] pixel = TabuleiroCasas.casaParaPixel(j.getPosicaoAtual());
@@ -299,7 +286,6 @@ public class TelaTabuleiro extends JFrame {
                 g2.drawOval(pixel[0] - raio, pixel[1] - raio, raio * 2, raio * 2);
             }
 
-            // Destaca piao do jogador atual com borda branca
             Jogador atual = jogo.getJogadorAtual();
             Color corAtual = CORES_PERSONAGENS.getOrDefault(atual.getNome(), Color.GRAY);
             int[] pixelAtual = TabuleiroCasas.casaParaPixel(atual.getPosicaoAtual());
@@ -310,22 +296,19 @@ public class TelaTabuleiro extends JFrame {
             g2.setStroke(new BasicStroke(2.5f));
             g2.drawOval(pixelAtual[0] - raio, pixelAtual[1] - raio, raio * 2, raio * 2);
 
-            // Dados via drawImage
+            // Dados desenhados abaixo dos botoes de controle, acima dos botoes de acao
             if (dadosLancados && imgDados.containsKey(valoresDados[0])
                                && imgDados.containsKey(valoresDados[1])) {
-                g2.drawImage(imgDados.get(valoresDados[0]), 750, 300, 60, 60, null);
-                g2.drawImage(imgDados.get(valoresDados[1]), 820, 300, 60, 60, null);
+                g2.drawImage(imgDados.get(valoresDados[0]), 750, 440, 60, 60, null);
+                g2.drawImage(imgDados.get(valoresDados[1]), 820, 440, 60, 60, null);
             }
 
-            // Barra lateral colorida com a cor do jogador atual
             g2.setColor(CORES_PERSONAGENS.getOrDefault(atual.getNome(), Color.GRAY));
             g2.fillRect(735, 50, 5, getHeight() - 50);
         }
-        
-        
+
         @Override
         public void notify(ObservadoIF o) {
-            // Atualiza estado local a partir do model
             lblJogadorAtual.setText("Vez de: " + jogo.getJogadorAtual().getNome());
             repaint();
         }
@@ -336,8 +319,6 @@ public class TelaTabuleiro extends JFrame {
             int casaClicada = TabuleiroCasas.pixelParaCasa(e.getX(), e.getY());
             if (casaClicada == -1) return;
 
-            // Se clicou num comodo alcancavel, usa o ID do comodo
-            // (o MapeaCasas ja retorna IDs de comodo quando aplicavel)
             DeslocarPiao dp = new DeslocarPiao();
             boolean moveu = dp.deslocarPiao(
                 jogo.getJogadorAtual(),
