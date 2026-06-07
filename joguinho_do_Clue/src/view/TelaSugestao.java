@@ -90,9 +90,16 @@ public class TelaSugestao extends JDialog {
             if (j == atual) continue;
             for (Carta c : j.getMao()) {
                 String nome = c.getNome();
-                if (nome.equals(suspeito) || nome.equals(arma) || nome.equals(comodo)) {
-                    return j.getNome() + " mostrou uma carta!";
+                if (nome.equals(suspeito)) {
+                    return j.getNome() + " mostrou uma carta de suspeito: " + suspeito;
                 }
+                else if (nome.equals(arma)) {
+                    return j.getNome() + " mostrou uma carta de arma: " + arma;
+                }
+                else if (nome.equals(comodo)) {
+                    return j.getNome() + " mostrou uma carta de comodo: " + comodo;
+                }
+
             }
         }
         return "Ninguém refutou a sugestão.";
