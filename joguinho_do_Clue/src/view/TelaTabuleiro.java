@@ -32,6 +32,7 @@ public class TelaTabuleiro extends JFrame {
     class PainelTabuleiro extends JPanel implements MouseListener, ObservadorIF {
 
         private Jogo jogo;
+        private Controller ctrl;
         private BufferedImage imgTabuleiro;
         private Map<Integer, BufferedImage> imgDados;
         private int[] valoresDados;
@@ -58,18 +59,21 @@ public class TelaTabuleiro extends JFrame {
         private JLabel lblStatus;
 
         PainelTabuleiro(Jogo jogo) {
-            this.jogo = jogo;
+            this.jogo           = jogo;
+            this.ctrl           = Controller.getInstance();
             this.valoresDados   = new int[]{1, 1};
             this.casasAlcancaveis = new HashSet<>();
             this.dadosLancados  = false;
             this.passagemUsada  = false;
-            this.palpiteFeito = false;
+            this.palpiteFeito   = false;
 
             carregarImagens();
             configurarLayout();
             addMouseListener(this);
             atualizarBotoesPassagem();
-            jogo.add(this);
+
+            // Registra este painel como observador via Controller
+            ctrl.registra(this);
         }
 
         private void carregarImagens() {
@@ -108,7 +112,6 @@ public class TelaTabuleiro extends JFrame {
             lblStatus.setBounds(750, 115, 500, 20);
             add(lblStatus);
 
-            // Botao jogar dados
             btnJogarDados = new JButton("Jogar Dados");
             btnJogarDados.setBounds(750, 145, 150, 35);
             btnJogarDados.addActionListener(new ActionListener() {
@@ -152,15 +155,14 @@ public class TelaTabuleiro extends JFrame {
             });
             add(btnProximo);
 
-            // Botoes de acao — abaixo dos dados (dados ficam em y=440)
-            // Ordem: Ver Cartas, Sugestao, Bloco de Notas
             JButton btnVerCartas = new JButton("Ver Cartas");
-            btnVerCartas.setBounds(750, 530, 150, 35);
+            btnVerCartas.setBounds(750, 295, 150, 35);
             btnVerCartas.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                	System.out.println("Ver Cartas clicado");
-                    new TelaCartas(TelaTabuleiro.this, jogo.getJogadorAtual());
-                    System.out.println("TelaCartas criada");
+                    new TelaCartas(
+                        (JFrame) SwingUtilities.getWindowAncestor(PainelTabuleiro.this),
+                        ctrl.getJogadorAtual()
+                    );
                 }
             });
             add(btnVerCartas);
@@ -169,7 +171,7 @@ public class TelaTabuleiro extends JFrame {
             btnSugestao.setBounds(750, 340, 150, 35);
             btnSugestao.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    int pos = jogo.getJogadorAtual().getPosicaoAtual();
+                    int pos = ctrl.getJogadorAtual().getPosicaoAtual();
                     if (!TabuleiroCasas.isComodo(pos)) {
                         lblStatus.setText("Você precisa estar em um cômodo.");
                         return;
@@ -178,9 +180,9 @@ public class TelaTabuleiro extends JFrame {
                         lblStatus.setText("Você já fez um palpite neste turno.");
                         return;
                     }
-                    palpiteFeito = true; 
+                    palpiteFeito = true;
                     new TelaSugestao(
-                    		(JFrame) SwingUtilities.getWindowAncestor(PainelTabuleiro.this),
+                        (JFrame) SwingUtilities.getWindowAncestor(PainelTabuleiro.this),
                         jogo
                     );
                 }
@@ -188,17 +190,20 @@ public class TelaTabuleiro extends JFrame {
             add(btnSugestao);
 
             JButton btnBloco = new JButton("Bloco de Notas");
-            btnBloco.setBounds(750, 630, 150, 35);
+            btnBloco.setBounds(750, 385, 150, 35);
             btnBloco.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    new TelaBlocoNotas(TelaTabuleiro.this, jogo); 
+                	new TelaBlocoNotas(
+                		    SwingUtilities.getWindowAncestor(PainelTabuleiro.this),
+                		    ctrl.getJogadorAtual()
+                	);
                 }
             });
             add(btnBloco);
         }
 
         private void atualizarBotoesPassagem() {
-            int posAtual = jogo.getJogadorAtual().getPosicaoAtual();
+            int posAtual = ctrl.getJogadorAtual().getPosicaoAtual();
             boolean temPassagem = TabuleiroCasas.isComodo(posAtual)
                 && TabuleiroCasas.passagemSecreta(posAtual) != -1
                 && !dadosLancados
@@ -208,7 +213,7 @@ public class TelaTabuleiro extends JFrame {
         }
 
         private void usarPassagemSecreta() {
-            jogo.usarPassagemSecreta();
+            ctrl.usarPassagemSecreta(); // via Controller
             passagemUsada = true;
             btnPassagemSecreta.setEnabled(false);
             btnJogarDados.setEnabled(false);
@@ -230,12 +235,11 @@ public class TelaTabuleiro extends JFrame {
             valoresDados[0] = d1;
             valoresDados[1] = d2;
 
-            jogo.setDados(d1, d2);
+            ctrl.lancarDados(d1, d2); // via Controller
 
             int totalPassos = d1 + d2;
             lblPassos.setText("Passos: " + totalPassos);
-            casasAlcancaveis = jogo.getMapeaCasas().mapearCasas(
-                valoresDados, jogo.getJogadorAtual().getPosicaoAtual());
+            casasAlcancaveis = ctrl.getCasasAlcancaveis(valoresDados);
             dadosLancados = true;
             btnJogarDados.setEnabled(false);
             btnPassagemSecreta.setEnabled(false);
@@ -244,12 +248,12 @@ public class TelaTabuleiro extends JFrame {
         }
 
         private void avancarJogador() {
-            jogo.proximoJogador();
-            dadosLancados  = false;
-            passagemUsada  = false;
-            palpiteFeito   = false;
+            ctrl.passarTurno(); // via Controller
+            dadosLancados    = false;
+            passagemUsada    = false;
+            palpiteFeito     = false;
             casasAlcancaveis = new HashSet<>();
-            lblJogadorAtual.setText("Vez de: " + jogo.getJogadorAtual().getNome());
+            lblJogadorAtual.setText("Vez de: " + ctrl.getJogadorAtual().getNome());
             lblPassos.setText("Passos: -");
             lblStatus.setText("");
             combo1.setSelectedIndex(0);
@@ -297,7 +301,7 @@ public class TelaTabuleiro extends JFrame {
                 g2.drawOval(pixel[0] - raio, pixel[1] - raio, raio * 2, raio * 2);
             }
 
-            Jogador atual = jogo.getJogadorAtual();
+            Jogador atual = ctrl.getJogadorAtual();
             Color corAtual = CORES_PERSONAGENS.getOrDefault(atual.getNome(), Color.GRAY);
             int[] pixelAtual = TabuleiroCasas.casaParaPixel(atual.getPosicaoAtual());
             int raio = 8;
@@ -307,11 +311,10 @@ public class TelaTabuleiro extends JFrame {
             g2.setStroke(new BasicStroke(2.5f));
             g2.drawOval(pixelAtual[0] - raio, pixelAtual[1] - raio, raio * 2, raio * 2);
 
-            // Dados desenhados abaixo dos botoes de controle, acima dos botoes de acao
             if (dadosLancados && imgDados.containsKey(valoresDados[0])
                                && imgDados.containsKey(valoresDados[1])) {
-                g2.drawImage(imgDados.get(valoresDados[0]), 750, 440, 60, 60, null);
-                g2.drawImage(imgDados.get(valoresDados[1]), 820, 440, 60, 60, null);
+                g2.drawImage(imgDados.get(valoresDados[0]), 750, 450, 60, 60, null);
+                g2.drawImage(imgDados.get(valoresDados[1]), 820, 450, 60, 60, null);
             }
 
             g2.setColor(CORES_PERSONAGENS.getOrDefault(atual.getNome(), Color.GRAY));
@@ -320,7 +323,7 @@ public class TelaTabuleiro extends JFrame {
 
         @Override
         public void notify(ObservadoIF o) {
-            lblJogadorAtual.setText("Vez de: " + jogo.getJogadorAtual().getNome());
+            lblJogadorAtual.setText("Vez de: " + ctrl.getJogadorAtual().getNome());
             repaint();
         }
 
@@ -330,12 +333,7 @@ public class TelaTabuleiro extends JFrame {
             int casaClicada = TabuleiroCasas.pixelParaCasa(e.getX(), e.getY());
             if (casaClicada == -1) return;
 
-            DeslocarPiao dp = new DeslocarPiao();
-            boolean moveu = dp.deslocarPiao(
-                jogo.getJogadorAtual(),
-                casaClicada,
-                casasAlcancaveis
-            );
+            boolean moveu = ctrl.moverJogador(casaClicada, casasAlcancaveis); // via Controller
 
             if (moveu) {
                 dadosLancados    = false;
