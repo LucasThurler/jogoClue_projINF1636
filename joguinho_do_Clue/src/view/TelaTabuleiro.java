@@ -200,6 +200,17 @@ public class TelaTabuleiro extends JFrame {
                 }
             });
             add(btnBloco);
+            
+            JButton btnAcusacao = new JButton("Acusação Final");
+            btnAcusacao.setBounds(750, 430, 150, 35);
+            btnAcusacao.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    new TelaAcusacao(
+                        (JFrame) SwingUtilities.getWindowAncestor(PainelTabuleiro.this)
+                    );
+                }
+            });
+            add(btnAcusacao);
         }
 
         private void atualizarBotoesPassagem() {
@@ -311,10 +322,9 @@ public class TelaTabuleiro extends JFrame {
             g2.setStroke(new BasicStroke(2.5f));
             g2.drawOval(pixelAtual[0] - raio, pixelAtual[1] - raio, raio * 2, raio * 2);
 
-            if (dadosLancados && imgDados.containsKey(valoresDados[0])
-                               && imgDados.containsKey(valoresDados[1])) {
-                g2.drawImage(imgDados.get(valoresDados[0]), 750, 450, 60, 60, null);
-                g2.drawImage(imgDados.get(valoresDados[1]), 820, 450, 60, 60, null);
+            if (dadosLancados && imgDados.containsKey(valoresDados[0]) && imgDados.containsKey(valoresDados[1])) {
+                g2.drawImage(imgDados.get(valoresDados[0]), 750, 470, 60, 60, null);
+                g2.drawImage(imgDados.get(valoresDados[1]), 820, 470, 60, 60, null);
             }
 
             g2.setColor(CORES_PERSONAGENS.getOrDefault(atual.getNome(), Color.GRAY));

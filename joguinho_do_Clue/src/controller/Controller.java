@@ -44,4 +44,9 @@ public class Controller {
     }
 
     public void usarPassagemSecreta() { jogo.usarPassagemSecreta(); }
+    
+    public boolean fazerAcusacao(String suspeito, String arma, String comodo) {
+        return jogo.verificarAcusacao(suspeito, arma, comodo);
+    }
 }
+

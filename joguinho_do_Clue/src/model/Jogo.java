@@ -154,4 +154,16 @@ public class Jogo implements ObservadoIF {
         System.out.println("Casas alcancaveis com dado=3: " + alcancaveis);
         System.out.println("Quantidade: " + alcancaveis.size());
     }
+    
+    public boolean verificarAcusacao(String suspeito, String arma, String comodo) {
+        // Assume-se que 'Jogo' possui um atributo 'baralho' instanciado
+        java.util.Map<model.TipoCarta, model.Carta> envelope = baralho.getEnvelopeConfidencial();
+
+        boolean acertouSuspeito = envelope.get(model.TipoCarta.SUSPEITO).getNome().equals(suspeito);
+        boolean acertouArma = envelope.get(model.TipoCarta.ARMA).getNome().equals(arma);
+        boolean acertouComodo = envelope.get(model.TipoCarta.COMODO).getNome().equals(comodo);
+
+        return acertouSuspeito && acertouArma && acertouComodo;
+    }
+    
 }
