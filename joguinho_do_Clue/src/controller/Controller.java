@@ -39,7 +39,7 @@ public class Controller {
     public boolean moverJogador(int casaEscolhida, Set<Integer> casasAlcancaveis) {
         DeslocarPiao dp = new DeslocarPiao();
         boolean moveu = dp.deslocarPiao(jogo.getJogadorAtual(), casaEscolhida, casasAlcancaveis);
-        if (moveu) jogo.setDados(jogo.get(1), jogo.get(2)); // dispara atualiza()
+        if (moveu) jogo.notificarObservadores(); // so notifica, sem mudar dados
         return moveu;
     }
 

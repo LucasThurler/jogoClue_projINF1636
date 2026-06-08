@@ -333,7 +333,26 @@ public class TelaTabuleiro extends JFrame {
 
         @Override
         public void notify(ObservadoIF o) {
+            // Atualiza label do jogador atual
             lblJogadorAtual.setText("Vez de: " + ctrl.getJogadorAtual().getNome());
+
+            // Atualiza valores dos dados vindos do model
+            int d1 = o.get(1);
+            int d2 = o.get(2);
+            if (d1 > 0 && d2 > 0) {
+                valoresDados[0] = d1;
+                valoresDados[1] = d2;
+                int totalPassos = d1 + d2;
+                lblPassos.setText("Passos: " + totalPassos);
+
+                casasAlcancaveis = ctrl.getCasasAlcancaveis(valoresDados);
+                dadosLancados = true;
+                btnJogarDados.setEnabled(false);
+                btnPassagemSecreta.setEnabled(false);
+                lblStatus.setText("Clique numa casa destacada para mover.");
+            }
+
+            atualizarBotoesPassagem();
             repaint();
         }
 

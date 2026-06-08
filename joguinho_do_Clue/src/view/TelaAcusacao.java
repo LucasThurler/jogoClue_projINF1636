@@ -26,7 +26,7 @@ public class TelaAcusacao extends JDialog {
         super(parent, "Acusação Final", true);
 
         JPanel painel = new JPanel(null);
-        painel.setPreferredSize(new Dimension(400, 250));
+        painel.setPreferredSize(new Dimension(400, 280));
         painel.setBackground(Color.DARK_GRAY);
 
         JLabel lblAviso = new JLabel("Atenção: Se a acusação estiver errada, você perde!");
@@ -61,41 +61,44 @@ public class TelaAcusacao extends JDialog {
         comboComodo.setBounds(130, 130, 200, 25);
         painel.add(comboComodo);
 
+        JLabel lblResultado = new JLabel("");
+        lblResultado.setForeground(Color.YELLOW);
+        lblResultado.setFont(new Font("Arial", Font.BOLD, 13));
+        lblResultado.setBounds(20, 215, 360, 25);
+        painel.add(lblResultado);
+
         JButton btnConfirmar = new JButton("Acusar");
-        btnConfirmar.setBounds(60, 180, 120, 30);
-        // Utilizando classe anônima em vez de Lambda
+        btnConfirmar.setBounds(60, 175, 120, 30);
         btnConfirmar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String suspeito = (String) comboSuspeito.getSelectedItem();
-                String arma = (String) comboArma.getSelectedItem();
-                String comodo = (String) comboComodo.getSelectedItem();
+                String arma     = (String) comboArma.getSelectedItem();
+                String comodo   = (String) comboComodo.getSelectedItem();
 
                 Controller ctrl = Controller.getInstance();
-                boolean venceu = ctrl.fazerAcusacao(suspeito, arma, comodo);
+                boolean venceu  = ctrl.fazerAcusacao(suspeito, arma, comodo);
 
                 if (venceu) {
-                    JOptionPane.showMessageDialog(TelaAcusacao.this,
-                        "Parabéns! Você desvendou o mistério e venceu o jogo!",
-                        "Fim de Jogo", JOptionPane.INFORMATION_MESSAGE);
+                    lblResultado.setForeground(Color.GREEN);
+                    lblResultado.setText("Parabéns! Você venceu o jogo!");
                 } else {
-                    JOptionPane.showMessageDialog(TelaAcusacao.this,
-                        "Acusação incorreta! Você perdeu o jogo.",
-                        "Fim de Jogo", JOptionPane.ERROR_MESSAGE);
+                    lblResultado.setForeground(Color.RED);
+                    lblResultado.setText("Acusação errada! Você está eliminado.");
                 }
-                
-                System.exit(0); // Encerra o jogo em ambos os casos na acusação final
+
+                btnConfirmar.setEnabled(false);
             }
         });
         painel.add(btnConfirmar);
 
-        JButton btnCancelar = new JButton("Cancelar");
-        btnCancelar.setBounds(200, 180, 120, 30);
-        btnCancelar.addActionListener(new ActionListener() {
+        JButton btnFechar = new JButton("Fechar");
+        btnFechar.setBounds(200, 175, 120, 30);
+        btnFechar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
             }
         });
-        painel.add(btnCancelar);
+        painel.add(btnFechar);
 
         setContentPane(painel);
         pack();

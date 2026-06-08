@@ -65,6 +65,10 @@ public class Jogo implements ObservadoIF {
     private void atualiza() {
         for (ObservadorIF ob : observadores) ob.notify(this);
     }
+    
+    public void notificarObservadores() {
+        atualiza();
+    }
 
     // --- Acoes do jogo ---
     public void setDados(int d1, int d2) {
@@ -162,7 +166,8 @@ public class Jogo implements ObservadoIF {
         boolean acertouSuspeito = envelope.get(model.TipoCarta.SUSPEITO).getNome().equals(suspeito);
         boolean acertouArma = envelope.get(model.TipoCarta.ARMA).getNome().equals(arma);
         boolean acertouComodo = envelope.get(model.TipoCarta.COMODO).getNome().equals(comodo);
-
+        
+        atualiza();
         return acertouSuspeito && acertouArma && acertouComodo;
     }
     
