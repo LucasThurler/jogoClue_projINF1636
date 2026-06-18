@@ -53,6 +53,7 @@ public class TelaTabuleiro extends JFrame {
 
         private JButton btnJogarDados;
         private JButton btnPassagemSecreta;
+        private JButton btnSalvar;
         private JComboBox<Integer> combo1, combo2;
         private JLabel lblJogadorAtual;
         private JLabel lblPassos;
@@ -211,7 +212,28 @@ public class TelaTabuleiro extends JFrame {
                 }
             });
             add(btnAcusacao);
+            
+            JButton btnSalvar = new JButton("Salvar Jogo");
+            btnSalvar.setBounds(750, 475, 150, 35);
+            btnSalvar.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    JFileChooser fc = new JFileChooser();
+                    fc.setSelectedFile(new File("partida.txt"));
+                    int resultado = fc.showSaveDialog(null);
+                    if (resultado == JFileChooser.APPROVE_OPTION) {
+                        File arquivo = fc.getSelectedFile();
+                        
+                        if (!arquivo.getName().endsWith(".txt")) {
+                            arquivo = new File(arquivo.getAbsolutePath() + ".txt");
+                        }
+                        CarregarSave.salvar(ctrl.getJogo(), arquivo);
+                    }
+                }
+            });
+            add(btnSalvar);
         }
+        	
+        	
 
         private void atualizarBotoesPassagem() {
             int posAtual = ctrl.getJogadorAtual().getPosicaoAtual();
@@ -254,6 +276,7 @@ public class TelaTabuleiro extends JFrame {
             dadosLancados = true;
             btnJogarDados.setEnabled(false);
             btnPassagemSecreta.setEnabled(false);
+            btnSalvar.setEnabled(false);
             lblStatus.setText("Clique numa casa destacada para mover.");
             repaint();
         }
@@ -269,6 +292,7 @@ public class TelaTabuleiro extends JFrame {
             lblStatus.setText("");
             combo1.setSelectedIndex(0);
             combo2.setSelectedIndex(0);
+            btnSalvar.setEnabled(true);
             atualizarBotoesPassagem();
             repaint();
         }
@@ -323,8 +347,8 @@ public class TelaTabuleiro extends JFrame {
             g2.drawOval(pixelAtual[0] - raio, pixelAtual[1] - raio, raio * 2, raio * 2);
 
             if (dadosLancados && imgDados.containsKey(valoresDados[0]) && imgDados.containsKey(valoresDados[1])) {
-                g2.drawImage(imgDados.get(valoresDados[0]), 750, 470, 60, 60, null);
-                g2.drawImage(imgDados.get(valoresDados[1]), 820, 470, 60, 60, null);
+                g2.drawImage(imgDados.get(valoresDados[0]), 750, 520, 60, 60, null);
+                g2.drawImage(imgDados.get(valoresDados[1]), 820, 520, 60, 60, null);
             }
 
             g2.setColor(CORES_PERSONAGENS.getOrDefault(atual.getNome(), Color.GRAY));

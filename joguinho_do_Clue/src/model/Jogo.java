@@ -171,4 +171,41 @@ public class Jogo implements ObservadoIF {
         return acertouSuspeito && acertouArma && acertouComodo;
     }
     
+    public String getSuspeitoEnvelope() {
+        return baralho.getEnvelopeConfidencial().get(TipoCarta.SUSPEITO).getNome();
+    }
+
+    public String getArmaEnvelope() {
+        return baralho.getEnvelopeConfidencial().get(TipoCarta.ARMA).getNome();
+    }
+
+    public String getComodoEnvelope() {
+        return baralho.getEnvelopeConfidencial().get(TipoCarta.COMODO).getNome();
+    }
+    
+    public void eliminarJogadorAtual() {
+        jogadores.remove(indiceJogadorAtual);
+        if (jogadores.isEmpty()) return;
+        indiceJogadorAtual = indiceJogadorAtual % jogadores.size();
+        atualiza();
+    }
+    
+    public void carregarIndiceJogador(int indice) {
+        if (indice >= 0 && indice < jogadores.size()) {
+            indiceJogadorAtual = indice;
+        }
+        atualiza();
+    }
+    
+    public void carregarCartas(Map<String, List<String[]>> cartasPorJogador) {
+        for (Jogador j : jogadores) {
+            j.limparMao();
+            List<String[]> mao = cartasPorJogador.get(j.getNome());
+            if (mao != null) {
+                for (String[] c : mao) {
+                    j.receberCartaPorNome(c[0], c[1]);
+                }
+            }
+        }
+    }
 }

@@ -48,5 +48,25 @@ public class Controller {
     public boolean fazerAcusacao(String suspeito, String arma, String comodo) {
         return jogo.verificarAcusacao(suspeito, arma, comodo);
     }
+    
+    public void eliminarJogadorAtual() {
+        jogo.eliminarJogadorAtual();
+    }
+    
+    public String getSuspeitoEnvelope() {
+        return jogo.getSuspeitoEnvelope();
+    }
+
+    public String getArmaEnvelope() {
+        return jogo.getArmaEnvelope();
+    }
+
+    public String getComodoEnvelope() {
+        return jogo.getComodoEnvelope();
+    }
+    
+    public void carregarIndiceJogador(int indice) {
+        jogo.carregarIndiceJogador(indice);
+    }
 }
 

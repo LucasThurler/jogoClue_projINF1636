@@ -27,6 +27,14 @@ public class Jogador {
     public List<Carta> getMao() {
         return mao;
     }
+    
+    public List<String[]> getMaoParaSalvar() {
+        List<String[]> resultado = new ArrayList<>();
+        for (Carta c : mao) {
+            resultado.add(new String[]{c.getNome(), c.getTipo().toString()});
+        }
+        return resultado;
+    }
 
     //Regra 6 - Bloco de notas para anotações
     //List<String> getBlocoDeNotas() {
@@ -49,5 +57,14 @@ public class Jogador {
     @Override
     public String toString() {
         return nome + ": " + mao;
+    }
+    
+    public void limparMao() {
+        mao.clear();
+    }
+
+    public void receberCartaPorNome(String nome, String tipo) {
+        TipoCarta tipoCarta = TipoCarta.valueOf(tipo);
+        mao.add(new Carta(nome, tipoCarta));
     }
 }
