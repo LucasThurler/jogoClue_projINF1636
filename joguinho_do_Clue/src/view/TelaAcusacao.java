@@ -81,9 +81,12 @@ public class TelaAcusacao extends JDialog {
                 if (venceu) {
                     lblResultado.setForeground(Color.GREEN);
                     lblResultado.setText("Parabéns! Você venceu o jogo!");
+                    	
                 } else {
                     lblResultado.setForeground(Color.RED);
                     lblResultado.setText("Acusação errada! Você está eliminado.");
+                    ctrl.getJogadorAtual().eliminar();
+                    
                 }
 
                 btnConfirmar.setEnabled(false);

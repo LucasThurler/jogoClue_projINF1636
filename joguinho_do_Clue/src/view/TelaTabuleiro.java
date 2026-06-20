@@ -209,11 +209,15 @@ public class TelaTabuleiro extends JFrame {
                     new TelaAcusacao(
                         (JFrame) SwingUtilities.getWindowAncestor(PainelTabuleiro.this)
                     );
+                    dadosLancados = false;
+                    casasAlcancaveis = new HashSet<>();
+                    btnJogarDados.setEnabled(false);
+                    repaint();
                 }
             });
             add(btnAcusacao);
             
-            JButton btnSalvar = new JButton("Salvar Jogo");
+            btnSalvar = new JButton("Salvar Jogo"); //JButton btnSalvar = new JButton("Salvar Jogo");
             btnSalvar.setBounds(750, 475, 150, 35);
             btnSalvar.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -283,6 +287,11 @@ public class TelaTabuleiro extends JFrame {
 
         private void avancarJogador() {
             ctrl.passarTurno(); // via Controller
+            if (ctrl.getJogadorAtual().isEliminado()) {
+                lblStatus.setText("Jogador eliminado. Clique em Próximo.");
+                btnJogarDados.setEnabled(false);
+                return;
+            }
             dadosLancados    = false;
             passagemUsada    = false;
             palpiteFeito     = false;

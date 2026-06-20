@@ -28,7 +28,13 @@ public class Controller {
 
     public Jogador getJogadorAtual() { return jogo.getJogadorAtual(); }
 
-    public void passarTurno() { jogo.proximoJogador(); }
+    public void passarTurno() {
+    	jogo.proximoJogador();
+    	while (getJogadorAtual().isEliminado()) {
+            jogo.proximoJogador();
+        }
+    
+    }
 
     public void lancarDados(int d1, int d2) { jogo.setDados(d1, d2); }
 

@@ -67,4 +67,9 @@ public class Jogador {
         TipoCarta tipoCarta = TipoCarta.valueOf(tipo);
         mao.add(new Carta(nome, tipoCarta));
     }
+    
+    private boolean eliminado = false;
+
+    public void eliminar() { this.eliminado = true; }
+    public boolean isEliminado() { return eliminado; }
 }

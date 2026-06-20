@@ -167,7 +167,7 @@ public class Jogo implements ObservadoIF {
         boolean acertouArma = envelope.get(model.TipoCarta.ARMA).getNome().equals(arma);
         boolean acertouComodo = envelope.get(model.TipoCarta.COMODO).getNome().equals(comodo);
         
-        atualiza();
+        //atualiza();
         return acertouSuspeito && acertouArma && acertouComodo;
     }
     
