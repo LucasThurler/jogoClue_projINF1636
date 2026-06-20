@@ -4,7 +4,6 @@ import model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TelaSugestao extends JDialog {
@@ -19,15 +18,14 @@ public class TelaSugestao extends JDialog {
         "Chave Inglesa", "Castical", "Revolver"
     };
 
-    private boolean palpiteConfirmado = false;
-
     public TelaSugestao(JFrame parent, Jogo jogo) {
         super(parent, "Fazer Sugestão", true);
 
-        String comodoAtual = TabuleiroCasas.nomeComodo(jogo.getJogadorAtual().getPosicaoAtual());
+        String comodoAtual = TabuleiroCasas.nomeComodo(
+            jogo.getJogadorAtual().getPosicaoAtual());
 
         JPanel painel = new JPanel(null);
-        painel.setPreferredSize(new Dimension(400, 300));
+        painel.setPreferredSize(new Dimension(420, 320));
         painel.setBackground(Color.DARK_GRAY);
 
         JLabel lblComodo = new JLabel("Cômodo: " + comodoAtual);
@@ -55,26 +53,36 @@ public class TelaSugestao extends JDialog {
 
         JLabel lblResultado = new JLabel("");
         lblResultado.setForeground(Color.YELLOW);
-        lblResultado.setBounds(20, 180, 360, 25);
+        lblResultado.setBounds(20, 200, 380, 25);
         painel.add(lblResultado);
 
+        JLabel lblMoveu = new JLabel("");
+        lblMoveu.setForeground(new Color(100, 200, 255));
+        lblMoveu.setBounds(20, 230, 380, 25);
+        painel.add(lblMoveu);
+
         JButton btnConfirmar = new JButton("Sugerir");
-        btnConfirmar.setBounds(20, 140, 100, 30);
+        btnConfirmar.setBounds(20, 155, 100, 30);
         btnConfirmar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (palpiteConfirmado) return; // bloqueia segundo clique
                 String suspeito = (String) comboSuspeito.getSelectedItem();
                 String arma     = (String) comboArma.getSelectedItem();
+
+                // Ponto 4: mover o suspeito para o comodo atual
+                jogo.moverSuspeitoParaComodo(suspeito,
+                    jogo.getJogadorAtual().getPosicaoAtual());
+                lblMoveu.setText(suspeito + " foi movido para " + comodoAtual + ".");
+
+                // Verificar se algum adversario tem carta da sugestao
                 String resposta = verificarSugestao(jogo, suspeito, arma, comodoAtual);
                 lblResultado.setText(resposta);
-                palpiteConfirmado = true;
-                btnConfirmar.setEnabled(false); // desabilita após primeiro uso
+                btnConfirmar.setEnabled(false);
             }
         });
         painel.add(btnConfirmar);
 
         JButton btnFechar = new JButton("Fechar");
-        btnFechar.setBounds(140, 140, 100, 30);
+        btnFechar.setBounds(140, 155, 100, 30);
         btnFechar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
@@ -88,53 +96,18 @@ public class TelaSugestao extends JDialog {
         setVisible(true);
     }
 
-    private String verificarSugestao(Jogo jogo, String suspeito, String arma, String comodo) {
+    private String verificarSugestao(Jogo jogo, String suspeito,
+                                      String arma, String comodo) {
+        Jogador atual    = jogo.getJogadorAtual();
         List<Jogador> jogadores = jogo.getJogadores();
-        Jogador atual = jogo.getJogadorAtual();
-        int indiceAtual = jogadores.indexOf(atual);
-        int total = jogadores.size();
 
-        for (int i = 1; i < total; i++) {
-            Jogador j = jogadores.get((indiceAtual + i) % total);
-
-            List<String> cartasRefutaveis = new ArrayList<>();
+        for (Jogador j : jogadores) {
+            if (j == atual) continue;
             for (Carta c : j.getMao()) {
                 String nome = c.getNome();
                 if (nome.equals(suspeito) || nome.equals(arma) || nome.equals(comodo)) {
-                    cartasRefutaveis.add(nome);
+                    return j.getNome() + " mostrou uma carta!";
                 }
-            }
-
-            if (!cartasRefutaveis.isEmpty()) {
-                String[] opcoes = cartasRefutaveis.toArray(new String[0]);
-
-                // Dialogo sem opcao de cancelar — jogador e obrigado a mostrar uma carta
-                JPanel painelEscolha = new JPanel(new BorderLayout(10, 10));
-                painelEscolha.add(new JLabel(j.getNome() + " deve mostrar uma carta:"), BorderLayout.NORTH);
-
-                JComboBox<String> comboEscolha = new JComboBox<>(opcoes);
-                painelEscolha.add(comboEscolha, BorderLayout.CENTER);
-
-                final String[] escolhida = {opcoes[0]};
-
-                JDialog dialogo = new JDialog(this, "Refutação", true);
-                dialogo.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-
-                JButton btnMostrar = new JButton("Mostrar");
-                btnMostrar.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        escolhida[0] = (String) comboEscolha.getSelectedItem();
-                        dialogo.dispose();
-                    }
-                });
-
-                painelEscolha.add(btnMostrar, BorderLayout.SOUTH);
-                dialogo.setContentPane(painelEscolha);
-                dialogo.pack();
-                dialogo.setLocationRelativeTo(this);
-                dialogo.setVisible(true);
-
-                return j.getNome() + " mostrou: " + escolhida[0];
             }
         }
         return "Ninguém refutou a sugestão.";

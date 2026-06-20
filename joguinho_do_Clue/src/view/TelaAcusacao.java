@@ -26,12 +26,12 @@ public class TelaAcusacao extends JDialog {
         super(parent, "Acusação Final", true);
 
         JPanel painel = new JPanel(null);
-        painel.setPreferredSize(new Dimension(400, 280));
+        painel.setPreferredSize(new Dimension(420, 290));
         painel.setBackground(Color.DARK_GRAY);
 
         JLabel lblAviso = new JLabel("Atenção: Se a acusação estiver errada, você perde!");
         lblAviso.setForeground(Color.RED);
-        lblAviso.setBounds(20, 10, 360, 25);
+        lblAviso.setBounds(20, 10, 380, 25);
         painel.add(lblAviso);
 
         JLabel lblSuspeito = new JLabel("Suspeito:");
@@ -64,11 +64,11 @@ public class TelaAcusacao extends JDialog {
         JLabel lblResultado = new JLabel("");
         lblResultado.setForeground(Color.YELLOW);
         lblResultado.setFont(new Font("Arial", Font.BOLD, 13));
-        lblResultado.setBounds(20, 215, 360, 25);
+        lblResultado.setBounds(20, 225, 380, 25);
         painel.add(lblResultado);
 
         JButton btnConfirmar = new JButton("Acusar");
-        btnConfirmar.setBounds(60, 175, 120, 30);
+        btnConfirmar.setBounds(60, 180, 120, 30);
         btnConfirmar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String suspeito = (String) comboSuspeito.getSelectedItem();
@@ -81,21 +81,29 @@ public class TelaAcusacao extends JDialog {
                 if (venceu) {
                     lblResultado.setForeground(Color.GREEN);
                     lblResultado.setText("Parabéns! Você venceu o jogo!");
-                    	
+                    btnConfirmar.setEnabled(false);
+                    // Fecha apos breve pausa para o jogador ler o resultado
+                    Timer timer = new Timer(2000, new ActionListener() {
+                        public void actionPerformed(ActionEvent ev) {
+                            dispose();
+                            System.exit(0);
+                        }
+                    });
+                    timer.setRepeats(false);
+                    timer.start();
                 } else {
                     lblResultado.setForeground(Color.RED);
                     lblResultado.setText("Acusação errada! Você está eliminado.");
-                    ctrl.getJogadorAtual().eliminar();
-                    
+                    btnConfirmar.setEnabled(false);
+                    // Elimina o jogador via Controller (nao direto no model)
+                    ctrl.eliminarJogadorAtual();
                 }
-
-                btnConfirmar.setEnabled(false);
             }
         });
         painel.add(btnConfirmar);
 
         JButton btnFechar = new JButton("Fechar");
-        btnFechar.setBounds(200, 175, 120, 30);
+        btnFechar.setBounds(210, 180, 120, 30);
         btnFechar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();

@@ -79,6 +79,24 @@ public class Baralho {
             i++;
         }
     }
+    
+    void restaurarEnvelope(String suspeito, String arma, String comodo) {
+        for (Carta c : getCartas(TipoCarta.SUSPEITO)) {
+            if (c.getNome().equals(suspeito)) {
+                envelopeConfidencial.put(TipoCarta.SUSPEITO, c); break;
+            }
+        }
+        for (Carta c : getCartas(TipoCarta.ARMA)) {
+            if (c.getNome().equals(arma)) {
+                envelopeConfidencial.put(TipoCarta.ARMA, c); break;
+            }
+        }
+        for (Carta c : getCartas(TipoCarta.COMODO)) {
+            if (c.getNome().equals(comodo)) {
+                envelopeConfidencial.put(TipoCarta.COMODO, c); break;
+            }
+        }
+    }
 
     HashMap<TipoCarta, Carta> getEnvelopeConfidencial() {
         return envelopeConfidencial;

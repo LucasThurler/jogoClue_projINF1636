@@ -137,6 +137,15 @@ public class TelaTabuleiro extends JFrame {
             combo2 = new JComboBox<>(new Integer[]{1,2,3,4,5,6});
             combo2.setBounds(1105, 145, 60, 35);
             add(combo2);
+            
+            JButton btnDadoManual = new JButton("Usar Valores");
+            btnDadoManual.setBounds(920, 195, 120, 30);
+            btnDadoManual.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    lancarDadosManuais();
+                }
+            });
+            add(btnDadoManual);
 
             btnPassagemSecreta = new JButton("Passagem Secreta");
             btnPassagemSecreta.setBounds(750, 195, 180, 35);
@@ -260,27 +269,29 @@ public class TelaTabuleiro extends JFrame {
         }
 
         private void lancarDados() {
-            int d1, d2;
-            boolean usarCombo = (combo1.getSelectedIndex() > 0 || combo2.getSelectedIndex() > 0);
-            if (usarCombo) {
-                d1 = (Integer) combo1.getSelectedItem();
-                d2 = (Integer) combo2.getSelectedItem();
-            } else {
-                d1 = new Dado(6).lancar();
-                d2 = new Dado(6).lancar();
-            }
+            // Sempre aleatorio
+            int d1 = new Dado(6).lancar();
+            int d2 = new Dado(6).lancar();
+            aplicarDados(d1, d2);
+        }
+
+        private void lancarDadosManuais() {
+            // Usa os valores dos combos
+            int d1 = (Integer) combo1.getSelectedItem();
+            int d2 = (Integer) combo2.getSelectedItem();
+            aplicarDados(d1, d2);
+        }
+
+        private void aplicarDados(int d1, int d2) {
             valoresDados[0] = d1;
             valoresDados[1] = d2;
-
-            ctrl.lancarDados(d1, d2); // via Controller
-
+            ctrl.lancarDados(d1, d2);
             int totalPassos = d1 + d2;
             lblPassos.setText("Passos: " + totalPassos);
             casasAlcancaveis = ctrl.getCasasAlcancaveis(valoresDados);
             dadosLancados = true;
             btnJogarDados.setEnabled(false);
             btnPassagemSecreta.setEnabled(false);
-            btnSalvar.setEnabled(false);
             lblStatus.setText("Clique numa casa destacada para mover.");
             repaint();
         }

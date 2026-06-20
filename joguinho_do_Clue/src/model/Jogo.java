@@ -25,6 +25,12 @@ public class Jogo implements ObservadoIF {
     private void prepararJogo() {
         baralho.embaralhar();
         baralho.preencherEnvelope();
+        // APENAS PARA DEBUG -- RETIRAR DEPOIS
+        System.out.println("=== ENVELOPE CONFIDENCIAL ===");
+        System.out.println("Suspeito: " + baralho.getEnvelopeConfidencial().get(TipoCarta.SUSPEITO).getNome());
+        System.out.println("Arma:     " + baralho.getEnvelopeConfidencial().get(TipoCarta.ARMA).getNome());
+        System.out.println("Cômodo:   " + baralho.getEnvelopeConfidencial().get(TipoCarta.COMODO).getNome());
+        System.out.println("=============================");
         baralho.distribuirCartas(jogadores);
         indiceJogadorAtual = encontrarSrtaScarlet();
         mapeaCasas = new MapeaCasas(TabuleiroCasas.construirGrafo());
@@ -89,6 +95,20 @@ public class Jogo implements ObservadoIF {
     public void proximoJogador() {
         indiceJogadorAtual = (indiceJogadorAtual + 1) % jogadores.size();
         atualiza();
+    }
+    
+    public void moverSuspeitoParaComodo(String nomeSuspeito, int comodoId) {
+        for (Jogador j : jogadores) {
+            if (j.getNome().equals(nomeSuspeito)) {
+                j.setPosicaoAtual(comodoId);
+                atualiza();
+                break;
+            }
+        }
+    }
+    
+    public void carregarEnvelope(String suspeito, String arma, String comodo) {
+        baralho.restaurarEnvelope(suspeito, arma, comodo);
     }
 
     public void atualizarBlocoDeNotas(String nomeJogador, List<String> novasAnotacoes) {
