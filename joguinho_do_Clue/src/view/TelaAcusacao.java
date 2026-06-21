@@ -82,22 +82,11 @@ public class TelaAcusacao extends JDialog {
                     lblResultado.setForeground(Color.GREEN);
                     lblResultado.setText("Parabéns! Você venceu o jogo!");
                     btnConfirmar.setEnabled(false);
-                    // Pergunta se quer nova partida
+                    // Fecha apos breve pausa para o jogador ler o resultado
                     Timer timer = new Timer(2000, new ActionListener() {
                         public void actionPerformed(ActionEvent ev) {
                             dispose();
-                            int resposta = JOptionPane.showConfirmDialog(
-                                parent,
-                                "Deseja iniciar uma nova partida?",
-                                "Nova Partida",
-                                JOptionPane.YES_NO_OPTION
-                            );
-                            if (resposta == JOptionPane.YES_OPTION) {
-                                parent.dispose();
-                                new TelaPersonagens(false);
-                            } else {
-                                System.exit(0);
-                            }
+                            System.exit(0);
                         }
                     });
                     timer.setRepeats(false);
@@ -108,6 +97,36 @@ public class TelaAcusacao extends JDialog {
                     btnConfirmar.setEnabled(false);
                     // Elimina o jogador via Controller (nao direto no model)
                     ctrl.eliminarJogadorAtual();
+                    // Verifica se todos os jogadores foram eliminados
+                    if (ctrl.getJogo().getJogadores().isEmpty()) {
+                        Timer timer = new Timer(1500, new ActionListener() {
+                            public void actionPerformed(ActionEvent ev) {
+                                dispose();
+                                String solucao = "Suspeito: "  + ctrl.getSuspeitoEnvelope()
+                                              + "\nArma: "     + ctrl.getArmaEnvelope()
+                                              + "\nCômodo: "   + ctrl.getComodoEnvelope();
+                                int resposta = JOptionPane.showOptionDialog(
+                                    parent,
+                                    "Todos os jogadores foram eliminados!\n\nA solução era:\n" + solucao
+                                    + "\n\nDeseja iniciar uma nova partida?",
+                                    "Fim de Jogo",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.WARNING_MESSAGE,
+                                    null,
+                                    new String[]{"Nova Partida", "Sair"},
+                                    "Nova Partida"
+                                );
+                                if (resposta == JOptionPane.YES_OPTION) {
+                                    parent.dispose();
+                                    new TelaPersonagens(false);
+                                } else {
+                                    System.exit(0);
+                                }
+                            }
+                        });
+                        timer.setRepeats(false);
+                        timer.start();
+                    }
                 }
             }
         });
