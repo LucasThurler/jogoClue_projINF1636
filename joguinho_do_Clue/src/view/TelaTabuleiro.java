@@ -285,6 +285,7 @@ public class TelaTabuleiro extends JFrame {
             dadosDisponiveis  = true; // marca que os dados foram lancados neste turno
             btnJogarDados.setEnabled(false);
             btnPassagemSecreta.setEnabled(false);
+            btnSalvar.setEnabled(false);
             lblStatus.setText("Clique numa casa destacada para mover.");
             repaint();
         }

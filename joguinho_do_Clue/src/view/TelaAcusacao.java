@@ -82,11 +82,22 @@ public class TelaAcusacao extends JDialog {
                     lblResultado.setForeground(Color.GREEN);
                     lblResultado.setText("Parabéns! Você venceu o jogo!");
                     btnConfirmar.setEnabled(false);
-                    // Fecha apos breve pausa para o jogador ler o resultado
+                    // Pergunta se quer nova partida
                     Timer timer = new Timer(2000, new ActionListener() {
                         public void actionPerformed(ActionEvent ev) {
                             dispose();
-                            System.exit(0);
+                            int resposta = JOptionPane.showConfirmDialog(
+                                parent,
+                                "Deseja iniciar uma nova partida?",
+                                "Nova Partida",
+                                JOptionPane.YES_NO_OPTION
+                            );
+                            if (resposta == JOptionPane.YES_OPTION) {
+                                parent.dispose();
+                                new TelaPersonagens(false);
+                            } else {
+                                System.exit(0);
+                            }
                         }
                     });
                     timer.setRepeats(false);
