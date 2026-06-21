@@ -1,28 +1,24 @@
 package view;
 
+import model.Jogo;
 import model.Jogador;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TelaBlocoNotas extends JDialog {
 
+    private Jogo jogo;
     private Jogador jogador;
     private JTextArea areaTexto;
 
-    public TelaBlocoNotas(JFrame parent, Jogador jogador) {
-        super(parent, "Bloco de Notas - " + jogador.getNome(), true);
-        this.jogador = jogador;
-        inicializar();
-    }
+    public TelaBlocoNotas(JFrame parent, Jogo jogo) {
+        super(parent, "Bloco de Notas - " + jogo.getJogadorAtual().getNome(), true);
+        this.jogo    = jogo;
+        this.jogador = jogo.getJogadorAtual();
 
-    public TelaBlocoNotas(Window parent, Jogador jogador) {
-        super((Frame) null, "Bloco de Notas - " + jogador.getNome(), true);
-        this.jogador = jogador;
-        inicializar();
-    }
-
-    private void inicializar() {
         JPanel painel = new JPanel(new BorderLayout());
         painel.setBackground(Color.DARK_GRAY);
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -46,11 +42,11 @@ public class TelaBlocoNotas extends JDialog {
         JButton btnSalvar = new JButton("Salvar");
         btnSalvar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                jogador.getBlocoDeNotas().clear();
+                List<String> linhas = new ArrayList<>();
                 for (String linha : areaTexto.getText().split("\n")) {
-                    if (!linha.trim().isEmpty())
-                        jogador.anotarNoBloco(linha);
+                    if (!linha.trim().isEmpty()) linhas.add(linha);
                 }
+                jogo.atualizarBlocoDeNotas(jogador.getNome(), linhas);
                 dispose();
             }
         });
@@ -68,7 +64,7 @@ public class TelaBlocoNotas extends JDialog {
 
         setContentPane(painel);
         pack();
-        setLocationRelativeTo(null);
-        setVisible(true); 
+        setLocationRelativeTo(parent);
+        setVisible(true);
     }
 }
