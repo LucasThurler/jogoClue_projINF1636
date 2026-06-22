@@ -31,7 +31,11 @@ public class MapeaCasas {
                 continue;
             }
 
-            if (atual.passos == totalPassos) continue;
+            // Se chegou num comodo antes de usar todos os passos, para aqui
+            if (TabuleiroCasas.isComodo(atual.pos) && atual.passos > 0) {
+                alcancaveis.add(atual.pos);
+                continue;
+            }
 
             List<Integer> vizinhos = adj.getOrDefault(atual.pos, Collections.emptyList());
             for (int vizinho : vizinhos) {
@@ -43,7 +47,7 @@ public class MapeaCasas {
                 }
             }
         }
-
+        
         alcancaveis.remove(casaInicial);
         return alcancaveis;
     }
